@@ -82,8 +82,8 @@ public class TraceyRabbitMQBrokerImpl implements TraceyBroker {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.queueDeclare(config.queue, config.durable, false, false, null);
-            channel.basicPublish(config.exchange, destination, null, payload.getBytes());
+            channel.exchangeDeclare(destination, "fanout");
+            channel.basicPublish(destination, "", null, payload.getBytes());
             channel.close();
             connection.close();
         } catch (Exception ex) {
@@ -99,29 +99,26 @@ public class TraceyRabbitMQBrokerImpl implements TraceyBroker {
             factory.setHost(config.host);
             final Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
-            String q = source == null ? config.queue : source;
-            channel.queueDeclare(q, config.durable, false, false, null);
-            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-            System.out.println(" [*] Version    : "+VERSION);
-            System.out.println(" [*] Using queue: "+q);
-            System.out.println(" [*] Durable    : "+config.durable);
-            System.out.println(" [*] Exchange   : "+config.exchange);
-            System.out.println(" [*] Host       : "+config.host);
-            channel.basicQos(1);
+            String exchange = source != null ? source : config.exchange;
+            channel.exchangeDeclare(exchange, "fanout");
+            String queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, exchange, "");
+
+            System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
+            System.out.println(" [tracey] Version    : "+VERSION);
+            System.out.println(" [tracey] Using queue: "+queueName);
+            System.out.println(" [tracey] Exchange   : "+exchange);
+            System.out.println(" [tracey] Host       : "+config.host);
+
             final Consumer consumer = new DefaultConsumer(channel) {
               @Override
               public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
-                try {
-                    System.out.println(" [x] Received '" + message + "'");
-                } finally {
-                  System.out.println(" [x] Done");
-                  channel.basicAck(envelope.getDeliveryTag(), false);
-                }
+                System.out.println(" [tracey] Received '" + message + "'");
               }
             };
 
-            channel.basicConsume(q, false, consumer);
+            channel.basicConsume(queueName, false, consumer);
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error while recieving", ex);
