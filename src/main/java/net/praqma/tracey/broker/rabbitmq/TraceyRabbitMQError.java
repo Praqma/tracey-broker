@@ -8,4 +8,5 @@ public class TraceyRabbitMQError extends TraceyIOError {
         super(message, innerCause);
     }
 
+
 }

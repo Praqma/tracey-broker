@@ -1,5 +1,6 @@
 package net.praqma.tracey.broker;
 
 public interface TraceyMessageValidator {
-    public void validate(String message) throws TraceyValidatorError;
+    public void validateSend(String message) throws TraceyValidatorError;
+    public void validateReceive(String message) throws TraceyValidatorError;
 }

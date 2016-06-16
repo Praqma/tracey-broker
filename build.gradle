@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.6.2'
-    compile group: 'net.praqma.tracey', name: 'core', version: '1.0-SNAPSHOT'
+    compile group: 'net.praqma.tracey', name: 'core', version: '1.0-drop0'
     testCompile group: 'junit', name: 'junit', version: '4.10'
 }
 
@@ -21,7 +21,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'net.praqma.tracey'
             artifactId 'broker'
-            version '1.0'
+            version '1.0-drop0'
             from components.java
         }
     }
