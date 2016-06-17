@@ -5,10 +5,22 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
+/**
+ * <h2>Tracey broker for RabbitMQ</h2>
+ * <p>
+ * This class implements a simple broker for RabbitMQ messaging.
+ * </p>
+ * <p>
+ * The default {@link TraceyRabbitMQReceiverImpl} does nothing more than print
+ * the received message to std.out.
+ * </p>
+ */
 public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceiverImpl, TraceyRabbitMQSenderImpl> {
 
+    /**
+     * An {@link  ExchangeType} representing the exchange types available for RabbitMQ.
+     */
     public enum ExchangeType {
         FANOUT("fanout"),
         DIRECT("direct");
@@ -25,14 +37,17 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(TraceyRabbitMQBrokerImpl.class.getName());
+    /** We share the connection factory */
     private ConnectionFactory factory = new ConnectionFactory();
 
     public TraceyRabbitMQBrokerImpl(TraceyRabbitMQReceiverImpl receiver, TraceyRabbitMQSenderImpl sender) {
         super(receiver, sender);
     }
 
-    public TraceyRabbitMQBrokerImpl() throws IOException, TimeoutException {
+    /**
+     * Default constructor. Makes a very basic receiver and sender.
+     */
+    public TraceyRabbitMQBrokerImpl() {
         this.receiver = new TraceyRabbitMQReceiverBuilder()
                 .setExchange("tracey")
                 .setFactory(factory)
@@ -41,7 +56,11 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
         this.sender = new TraceyRabbitMQSenderImpl(factory);
     }
 
-    public TraceyRabbitMQBrokerImpl(String host) throws IOException, TimeoutException {
+    /**
+     *
+     * @param host  the host you wish to connect to for sending and receiving messages.
+     */
+    public TraceyRabbitMQBrokerImpl(String host) {
         this.receiver = new TraceyRabbitMQReceiverBuilder()
                 .setExchange("tracey")
                 .setFactory(factory)
@@ -50,7 +69,7 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
         this.sender = new TraceyRabbitMQSenderImpl(factory);
     }
 
-    public TraceyRabbitMQBrokerImpl(File configFile) throws IOException, TimeoutException {
+    public TraceyRabbitMQBrokerImpl(File configFile) {
         this.receiver = TraceyRabbitMQReceiverBuilder
                 .buildFromConfigFile(configFile)
                 .setFactory(factory).build();

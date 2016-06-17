@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.broker.rabbitmq;
 
 import com.rabbitmq.client.AMQP;
@@ -19,8 +14,10 @@ import net.praqma.tracey.broker.TraceyReceiver;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 
 /**
- *
- * @author Mads
+ * <h2>Default RabbitMQ receiver implementation</h2>
+ * <p>
+ * Basic implementation for RabbitMQ. Prints received messages to console.
+ * </p>
  */
 public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
@@ -31,6 +28,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private ExchangeType type = ExchangeType.FANOUT;
     private TraceyRabbitMQMessageHandler handler;
 
+    /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
         handler = new TraceyRabbitMQMessageHandler() {
             @Override
@@ -41,6 +39,14 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         };
     }
 
+    /**
+     * A more detailed constructor. Used in {@link TraceyRabbitMQReceiverBuilder}
+     *
+     * @param c  the {@link ConnectionFactory} to use
+     * @param host  the RabbitMQ host
+     * @param exchange  the exchange to connect to
+     * @param type  the type of the exchange to use
+     */
     public TraceyRabbitMQReceiverImpl(ConnectionFactory c, String host, String exchange, ExchangeType type) {
         this.c = c;
         this.host = host;

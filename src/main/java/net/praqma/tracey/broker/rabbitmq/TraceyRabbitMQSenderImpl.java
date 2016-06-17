@@ -12,6 +12,12 @@ import net.praqma.tracey.broker.TraceySender;
 import net.praqma.tracey.broker.TraceyValidatorError;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 
+/**
+ * <h2>Tracey RabbitMQ sender</h2>
+ * <p>
+ * Basic implementation. Very simple.
+ * </p>
+ */
 public class TraceyRabbitMQSenderImpl implements TraceySender {
 
     public ExchangeType getType() {
@@ -35,7 +41,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     public TraceyRabbitMQSenderImpl(ConnectionFactory factory) {
         this.factory = factory;
     }
-    
+
     @Override
     public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
         try {
