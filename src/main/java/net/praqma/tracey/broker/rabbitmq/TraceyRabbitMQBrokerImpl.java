@@ -35,12 +35,10 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
         }
     }
 
-    /** We share the connection factory */
-    private ConnectionFactory factory = new ConnectionFactory();
-
     public TraceyRabbitMQBrokerImpl(TraceyRabbitMQReceiverImpl receiver, TraceyRabbitMQSenderImpl sender) {
         super(receiver, sender);
     }
+
 
     /**
      * Default constructor. Makes a very basic receiver and sender.
@@ -48,10 +46,10 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
     public TraceyRabbitMQBrokerImpl() {
         this.receiver = new TraceyRabbitMQReceiverBuilder()
                 .setExchange("tracey")
-                .setFactory(factory)
                 .setHost("localhost")
                 .setType(ExchangeType.FANOUT).build();
-        this.sender = new TraceyRabbitMQSenderImpl(factory);
+        this.sender = new TraceyRabbitMQSenderImpl();
+        sender.configure();
     }
 
     /**
@@ -61,30 +59,45 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
     public TraceyRabbitMQBrokerImpl(String host) {
         this.receiver = new TraceyRabbitMQReceiverBuilder()
                 .setExchange("tracey")
-                .setFactory(factory)
                 .setHost(host)
                 .setType(ExchangeType.FANOUT).build();
-        this.sender = new TraceyRabbitMQSenderImpl(factory);
+        receiver.configure();
+        this.sender = new TraceyRabbitMQSenderImpl();
+        sender.configure();
     }
 
     public TraceyRabbitMQBrokerImpl(File configFile) {
-        this.receiver = TraceyRabbitMQReceiverBuilder
-                .buildFromConfigFile(configFile)
-                .setFactory(factory).build();
-        this.sender = new TraceyRabbitMQSenderImpl(factory);
+        TraceyRabbitMQReceiverBuilder builder = TraceyRabbitMQReceiverBuilder
+                .buildFromConfigFile(configFile);
+        this.receiver = builder.build();
+        receiver.configure();
+
+        this.sender = builder.buildSender();
+        sender.configure();
     }
 
     /**
-     * @return the factory
+     * Full constructor
+     *
+     * @param host
+     * @param password
+     * @param user
+     * @param type
+     * @param exchange
      */
-    public ConnectionFactory getFactory() {
-        return factory;
-    }
-
-    /**
-     * @param factory the factory to set
-     */
-    public void setFactory(ConnectionFactory factory) {
-        this.factory = factory;
+    public TraceyRabbitMQBrokerImpl(String host, String password, String user, ExchangeType type, String exchange) {
+        this.receiver = new TraceyRabbitMQReceiverBuilder()
+                .setHost(host)
+                .setUsername(user)
+                .setPassword(password)
+                .setExchange(exchange)
+                .setType(type).build();
+        receiver.configure();
+        this.sender = new TraceyRabbitMQSenderImpl();
+        sender.setHost(host);
+        sender.setPw(password);
+        sender.setType(type);
+        sender.setUsername(user);
+        sender.configure();
     }
 }

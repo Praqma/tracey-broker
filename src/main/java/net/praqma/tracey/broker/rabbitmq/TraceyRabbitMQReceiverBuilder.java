@@ -12,13 +12,15 @@ import net.praqma.tracey.core.TraceyDefaultParserImpl;
  */
 public class TraceyRabbitMQReceiverBuilder {
     private String host = "localhost";
+    private String username;
     private TraceyRabbitMQBrokerImpl.ExchangeType type = TraceyRabbitMQBrokerImpl.ExchangeType.FANOUT;
     private String exchange = "tracey";
-    private ConnectionFactory factory;
+    private ConnectionFactory factory = new ConnectionFactory();
     private TraceyRabbitMQMessageHandler handler;
+    private String password;
 
     public TraceyRabbitMQReceiverImpl build() {
-        return new TraceyRabbitMQReceiverImpl(getFactory(), getHost(), getExchange(), getType());
+        return new TraceyRabbitMQReceiverImpl(host, exchange, type, password, username);
     }
 
     /**
@@ -35,14 +37,30 @@ public class TraceyRabbitMQReceiverBuilder {
         if (f != null && f.exists()) {
             TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
             Map m = ((ConfigObject) parser.parse(f)).flatten();
-            String host = (String) m.get("broker.rabbitmq.host");
-            String exchange = (String) m.get("broker.rabbitmq.exchange");
-            String typeString = (String) m.get("broker.rabbitmq.type");
+            String host = getOrDefault((String) m.get("broker.rabbitmq.host"), "localhost");
+            String exchange = getOrDefault((String) m.get("broker.rabbitmq.exchange"), "tracey");
+            String typeString = getOrDefault((String) m.get("broker.rabbitmq.type"), "fanout");
+            String uName = (String) m.get("broker.rabbitmq.username");
+            String pWord = (String) m.get("broker.rabbitmq.password");
             return new TraceyRabbitMQReceiverBuilder().
                     setHost(host).setExchange(exchange).
-                    setType(TraceyRabbitMQBrokerImpl.ExchangeType.valueOf(typeString));
+                    setPassword(pWord).
+                    setUsername(uName).
+                    setType(TraceyRabbitMQBrokerImpl.ExchangeType.valueOf(typeString.toUpperCase()));
         }
         return null;
+    }
+
+    public TraceyRabbitMQSenderImpl buildSender() {
+        return new TraceyRabbitMQSenderImpl(host, username, password);
+    }
+
+
+    public static String getOrDefault(String value, String defa) {
+        if(value != null) {
+            return value;
+        }
+        return defa;
     }
 
     public String getHost() {
@@ -96,5 +114,37 @@ public class TraceyRabbitMQReceiverBuilder {
      */
     public void setHandler(TraceyRabbitMQMessageHandler handler) {
         this.handler = handler;
+    }
+
+    /**
+     * @return the pw
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param pw the pw to set
+     * @return
+     */
+    public TraceyRabbitMQReceiverBuilder setPassword(String pw) {
+        this.password = pw;
+        return this;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     * @return
+     */
+    public TraceyRabbitMQReceiverBuilder setUsername(String username) {
+        this.username = username;
+        return this;
     }
 }

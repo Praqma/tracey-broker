@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.SaslConfig;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +23,11 @@ import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQReceiverImpl.class.getName());
-    private ConnectionFactory c;
+    private ConnectionFactory factory = new ConnectionFactory();
     private String host;
     private String exchange;
+    private String password;
+    private String username;
     private ExchangeType type = ExchangeType.FANOUT;
     private TraceyRabbitMQMessageHandler handler;
 
@@ -41,17 +44,19 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
     /**
      * A more detailed constructor. Used in {@link TraceyRabbitMQReceiverBuilder}
-     *
-     * @param c  the {@link ConnectionFactory} to use
+
      * @param host  the RabbitMQ host
      * @param exchange  the exchange to connect to
-     * @param type  the type of the exchange to use
+     * @param type  the type of the exchange to us
+     * @param pw  password for the broker
+     * @param username
      */
-    public TraceyRabbitMQReceiverImpl(ConnectionFactory c, String host, String exchange, ExchangeType type) {
-        this.c = c;
+    public TraceyRabbitMQReceiverImpl(String host, String exchange, ExchangeType type, String pw, String username) {
         this.host = host;
         this.exchange = exchange;
+        this.username = username;
         this.type = type;
+        this.password = pw;
         this.handler = new TraceyRabbitMQMessageHandler() {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -60,10 +65,27 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         };
     }
 
+    public final void configure() {
+
+        if (getPassword() != null) {
+            factory.setPassword(getPassword());
+        }
+
+        if (getUsername() != null) {
+            factory.setUsername(getUsername());
+        }
+
+        factory.setHost(getHost());
+    }
+
     @Override
     public String receive(String source) {
         try {
-            final Connection connection = c.newConnection();
+            System.out.println(" [tracey] user    :   "+factory.getUsername());
+            System.out.println(" [tracey] password:   "+factory.getPassword());
+            System.out.println(" [tracey] host    :   "+factory.getHost());
+
+            final Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
             String configuredExchange = source != null ? source : getExchange();
             channel.exchangeDeclare(configuredExchange, type.toString());
@@ -146,6 +168,48 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
      */
     public void setHandler(TraceyRabbitMQMessageHandler handler) {
         this.handler = handler;
+    }
+
+    /**
+     * @return the pw
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the pw to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return the factory
+     */
+    public ConnectionFactory getFactory() {
+        return factory;
+    }
+
+    /**
+     * @param factory the factory to set
+     */
+    public void setFactory(ConnectionFactory factory) {
+        this.factory = factory;
     }
 
 }

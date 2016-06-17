@@ -32,14 +32,31 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     }
 
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQSenderImpl.class.getName());
-    private ConnectionFactory factory;
+    private ConnectionFactory factory = new ConnectionFactory();
+    private String host = "localhost";
+    private String username;
+    private String pw;
 
     private ExchangeType type = ExchangeType.FANOUT;
 
     public TraceyRabbitMQSenderImpl() { }
 
-    public TraceyRabbitMQSenderImpl(ConnectionFactory factory) {
-        this.factory = factory;
+    public TraceyRabbitMQSenderImpl(String host, String username, String password) {
+        this.host = host;
+        this.username = username;
+        this.pw = password;
+    }
+
+    public final void configure() {
+
+        if(pw != null && !pw.trim().isEmpty()) {
+            factory.setPassword(getPw());
+        }
+
+        if(username != null)
+            factory.setUsername(getUsername());
+
+        factory.setHost(getHost());
     }
 
     @Override
@@ -59,5 +76,61 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
             throw new TraceyIOError("Tracey send timed out", ex);
         }
         return payload;
+    }
+
+    /**
+     * @return the host
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * @param host the host to set
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    /**
+     * @return the pw
+     */
+    public String getPw() {
+        return pw;
+    }
+
+    /**
+     * @param pw the pw to set
+     */
+    public void setPw(String pw) {
+        this.pw = pw;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return the factory
+     */
+    public ConnectionFactory getFactory() {
+        return factory;
+    }
+
+    /**
+     * @param factory the factory to set
+     */
+    public void setFactory(ConnectionFactory factory) {
+        this.factory = factory;
     }
 }
