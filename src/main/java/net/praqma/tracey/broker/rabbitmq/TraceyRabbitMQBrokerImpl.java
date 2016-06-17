@@ -3,8 +3,6 @@ package net.praqma.tracey.broker.rabbitmq;
 import net.praqma.tracey.broker.TraceyBroker;
 import com.rabbitmq.client.ConnectionFactory;
 import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * <h2>Tracey broker for RabbitMQ</h2>

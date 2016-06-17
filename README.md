@@ -6,6 +6,8 @@ This module contains abstractions and concrete implementations for the type of m
 
 The Broker class holds references to both sender and reciever, two seperate interfaces
 
+![Design Diagram](/docs/images/tracey2.png)
+
 ### TraceySender.java
 
 ```
