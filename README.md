@@ -153,11 +153,12 @@ And then attaching it to the Broker:
 
 ### Building tracey-broker
 
-`gradle build` 
+ - Make sure you've installed the [tracey core module](https://github.com/Praqma/tracey-core) locally first using `publishToMaven` task
+ - `gradle build` 
 
 ### Publishing a local artifact
 
-If youwa want to publish a local artifact to maven, you can do so using the `publishToMaven` task: 
+If you want to publish a local artifact to maven, you can do so using the `publishToMaven` task: 
 
 `gradle publishToMavenLocal`
 
