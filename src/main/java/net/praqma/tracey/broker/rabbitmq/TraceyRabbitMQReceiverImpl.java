@@ -81,10 +81,6 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     @Override
     public String receive(String source) {
         try {
-            System.out.println(" [tracey] user    :   "+factory.getUsername());
-            System.out.println(" [tracey] password:   "+factory.getPassword());
-            System.out.println(" [tracey] host    :   "+factory.getHost());
-
             final Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
             String configuredExchange = source != null ? source : getExchange();
@@ -92,11 +88,10 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
             String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, configuredExchange, "");
 
-            System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
-            System.out.println(" [tracey] Version    : 2.0");
             System.out.println(" [tracey] Using queue: " + queueName);
             System.out.println(" [tracey] Exchange   : " + configuredExchange);
             System.out.println(" [tracey] Host       : " + getHost());
+            System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
 
             Consumer c = new DefaultConsumer(channel) {
                 @Override
