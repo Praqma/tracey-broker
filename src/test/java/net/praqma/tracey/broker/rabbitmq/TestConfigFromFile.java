@@ -46,6 +46,7 @@ public class TestConfigFromFile {
 
     }
 
+
     @Test
     public void parseEmptyConfigFile() throws Exception {
         URI path = TestConfigFromFile.class.getResource("broker_empty.config").toURI();
@@ -64,6 +65,25 @@ public class TestConfigFromFile {
         assertEquals("guest", impl.getReceiver().getFactory().getPassword());
         assertEquals("guest", impl.getSender().getFactory().getUsername());
         assertEquals("guest", impl.getSender().getFactory().getPassword());
+    }
+    @Test
+    public void parseVariableExpansion() throws Exception {
+        URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();
+        File f = new File(path);
+        TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
+
+        TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
+        assertEquals("localhost", receiver.getHost());
+        assertEquals(System.getenv("JAVA_HOME"), receiver.getPassword());
+        assertNull(receiver.getUsername());
+        assertEquals("fanout", receiver.getType().toString());
+        assertEquals("tracey", receiver.getExchange());
+
+        //Factory defaults
+        assertEquals("guest", impl.getReceiver().getFactory().getUsername());
+        assertEquals(System.getenv("JAVA_HOME"), impl.getReceiver().getFactory().getPassword());
+        assertEquals("guest", impl.getSender().getFactory().getUsername());
+        assertEquals(System.getenv("JAVA_HOME"), impl.getSender().getFactory().getPassword());
     }
 
     @Test

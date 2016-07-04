@@ -25,6 +25,10 @@ public class TraceyRabbitMQReceiverBuilder {
     }
 
     public static String expand(String original) {
+
+        if(original == null)
+            return null;
+
         String text = original;
         Map<String, String> envMap = System.getenv();
         for (Entry<String, String> entry : envMap.entrySet()) {
@@ -35,6 +39,7 @@ public class TraceyRabbitMQReceiverBuilder {
             text = text.replace("$"+key, value);
             text = text.replace("%"+key+"%", value);
         }
+        
         return text;
     }
 
