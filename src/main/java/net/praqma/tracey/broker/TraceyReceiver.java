@@ -7,5 +7,5 @@ package net.praqma.tracey.broker;
  * </p>
  */
 public interface TraceyReceiver {
-    public String receive(String source);
+    public String receive(String source) throws TraceyIOError;
 }

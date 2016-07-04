@@ -1,7 +1,6 @@
 package net.praqma.tracey.broker.rabbitmq;
 
 import net.praqma.tracey.broker.TraceyBroker;
-import com.rabbitmq.client.ConnectionFactory;
 import java.io.File;
 
 /**

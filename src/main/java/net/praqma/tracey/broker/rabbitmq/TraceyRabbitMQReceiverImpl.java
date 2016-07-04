@@ -7,10 +7,11 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.SaslConfig;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.praqma.tracey.broker.TraceyIOError;
 import net.praqma.tracey.broker.TraceyReceiver;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 
@@ -79,7 +80,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     }
 
     @Override
-    public String receive(String source) {
+    public String receive(String source) throws TraceyIOError {
         try {
             final Connection connection = factory.newConnection();
             final Channel channel = connection.createChannel();
@@ -98,15 +99,16 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                     handler.handleDelivery(consumerTag, envelope, properties, body);
                 }
+
             };
 
-            channel.basicConsume(queueName, false, c);
+            return channel.basicConsume(queueName, false, c);
 
-        } catch (Exception ex) {
+
+        } catch (IOException | TimeoutException ex) {
             LOG.log(Level.SEVERE, "Error while recieving", ex);
+            throw new TraceyRabbitMQError("Exception caught while recieving using RabbitMQ", ex);
         }
-
-        return "";
     }
 
     /**
