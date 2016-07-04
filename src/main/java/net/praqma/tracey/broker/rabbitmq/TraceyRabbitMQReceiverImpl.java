@@ -31,6 +31,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private String username;
     private ExchangeType type = ExchangeType.FANOUT;
     private TraceyRabbitMQMessageHandler handler;
+    private Channel channel;
 
     /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
@@ -83,7 +84,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     public String receive(String source) throws TraceyIOError {
         try {
             final Connection connection = factory.newConnection();
-            final Channel channel = connection.createChannel();
+            channel = connection.createChannel();
             String configuredExchange = source != null ? source : getExchange();
             channel.exchangeDeclare(configuredExchange, type.toString());
             String queueName = channel.queueDeclare().getQueue();
@@ -109,6 +110,10 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
             LOG.log(Level.SEVERE, "Error while recieving", ex);
             throw new TraceyRabbitMQError("Exception caught while recieving using RabbitMQ", ex);
         }
+    }
+
+    public void cancel(String consumerTag) throws IOException {
+        channel.basicCancel(consumerTag);
     }
 
     /**
@@ -207,6 +212,20 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
      */
     public void setFactory(ConnectionFactory factory) {
         this.factory = factory;
+    }
+
+    /**
+     * @return the channel
+     */
+    public Channel getChannel() {
+        return channel;
+    }
+
+    /**
+     * @param channel the channel to set
+     */
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
 }
