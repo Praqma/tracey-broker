@@ -39,7 +39,6 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 System.out.println("[tracey] " + new String(body, "UTF-8"));
             }
-
         };
     }
 
@@ -239,5 +238,4 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     public void setChannel(Channel channel) {
         this.channel = channel;
     }
-
 }

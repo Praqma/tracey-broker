@@ -4,6 +4,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import groovy.util.ConfigObject;
 import java.io.File;
 import java.util.Map;
+import java.util.Map.Entry;
 import net.praqma.tracey.core.TraceyDefaultParserImpl;
 
 /**
@@ -20,7 +21,21 @@ public class TraceyRabbitMQReceiverBuilder {
     private String password;
 
     public TraceyRabbitMQReceiverImpl build() {
-        return new TraceyRabbitMQReceiverImpl(host, exchange, type, password, username);
+        return new TraceyRabbitMQReceiverImpl(expand(host), expand(exchange), type, expand(password), expand(username));
+    }
+
+    public static String expand(String original) {
+        String text = original;
+        Map<String, String> envMap = System.getenv();
+        for (Entry<String, String> entry : envMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            text = text.replace("${" + key + "}", value);
+            text = text.replace("$"+key+"$", value);
+            text = text.replace("$"+key, value);
+            text = text.replace("%"+key+"%", value);
+        }
+        return text;
     }
 
     /**

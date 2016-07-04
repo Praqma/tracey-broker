@@ -65,4 +65,19 @@ public class TestConfigFromFile {
         assertEquals("guest", impl.getSender().getFactory().getUsername());
         assertEquals("guest", impl.getSender().getFactory().getPassword());
     }
+
+    @Test
+    public void testVariableExpansion() throws Exception {
+        String windowsEnvVar = "%JAVA_HOME%";
+        String expected = System.getenv("JAVA_HOME");
+
+        String unixStyled = "$JAVA_HOME";
+        String unixStyled2 = "${JAVA_HOME}";
+
+        String expanded = TraceyRabbitMQReceiverBuilder.expand(windowsEnvVar);
+        assertEquals(expected, expanded);
+        assertEquals(expected, TraceyRabbitMQReceiverBuilder.expand(unixStyled));
+        assertEquals(expected, TraceyRabbitMQReceiverBuilder.expand(unixStyled2));
+
+    }
 }
