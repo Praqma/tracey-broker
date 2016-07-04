@@ -2,7 +2,6 @@ package net.praqma.tracey.broker.rabbitmq;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
@@ -45,6 +44,20 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     }
 
     /**
+     *
+     * @return the channel to be used by this reciever. We want to later on attach
+     *         maybe more than 1 consumer.
+     * @throws IOException when transport error occurs
+     * @throws TimeoutException when the we fail to connect because of timeout
+     */
+    public Channel createChannel() throws IOException, TimeoutException {
+        if(channel != null)
+            return channel;
+        this.channel = factory.newConnection().createChannel();
+        return channel;
+    }
+
+    /**
      * A more detailed constructor. Used in {@link TraceyRabbitMQReceiverBuilder}
 
      * @param host  the RabbitMQ host
@@ -83,8 +96,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     @Override
     public String receive(String source) throws TraceyIOError {
         try {
-            final Connection connection = factory.newConnection();
-            channel = connection.createChannel();
+            channel = createChannel();
             String configuredExchange = source != null ? source : getExchange();
             channel.exchangeDeclare(configuredExchange, type.toString());
             String queueName = channel.queueDeclare().getQueue();
