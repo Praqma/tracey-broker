@@ -7,11 +7,28 @@ package net.praqma.tracey.broker.rabbitmq;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 
+@PrepareForTest({System.class, TraceyRabbitMQReceiverBuilder.class})
 public class TestConfigFromFile {
+
+    @Rule
+    public PowerMockRule r = new PowerMockRule();
+
+    static final Map<String,String> ENV = new HashMap<String, String>();
+
+    static {
+        ENV.put("RABBITMQ_USER", "rabbituser");
+        ENV.put("RABBITMQ_PW", "rabbitpw");
+    }
 
     /**
      * Example config file. Test for basic stuff. We'll fail gloriously if the file is not there
@@ -68,31 +85,43 @@ public class TestConfigFromFile {
 
     @Test
     public void parseVariableExpansion() throws Exception {
+        PowerMockito.mockStatic(System.class);
+        Mockito.when(System.getenv()).thenReturn(ENV);
+        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_USER"))).thenReturn("rabbituser");
+        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_PW"))).thenReturn("rabbitpw");
+
         URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
 
+
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
-        assertEquals(System.getenv("JAVA_HOME"), receiver.getPassword());
+        assertEquals(System.getenv("RABBITMQ_PW"), receiver.getPassword());
         assertEquals("guest", receiver.getUsername());
         assertEquals("fanout", receiver.getType().toString());
         assertEquals("tracey", receiver.getExchange());
 
         //Factory defaults
         assertEquals("guest", impl.getReceiver().getFactory().getUsername());
-        assertEquals(System.getenv("JAVA_HOME"), impl.getReceiver().getFactory().getPassword());
+        assertEquals(System.getenv("RABBITMQ_PW"), impl.getReceiver().getFactory().getPassword());
         assertEquals("guest", impl.getSender().getFactory().getUsername());
-        assertEquals(System.getenv("JAVA_HOME"), impl.getSender().getFactory().getPassword());
+        assertEquals(System.getenv("RABBITMQ_PW"), impl.getSender().getFactory().getPassword());
     }
 
     @Test
     public void testVariableExpansion() throws Exception {
-        String windowsEnvVar = "%JAVA_HOME%";
-        String expected = System.getenv("JAVA_HOME");
 
-        String unixStyled = "$JAVA_HOME";
-        String unixStyled2 = "${JAVA_HOME}";
+        PowerMockito.mockStatic(System.class);
+        Mockito.when(System.getenv()).thenReturn(ENV);
+        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_USER"))).thenReturn("rabbituser");
+        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_PW"))).thenReturn("rabbitpw");
+
+        String windowsEnvVar = "%RABBITMQ_PW%";
+        String expected = System.getenv("RABBITMQ_PW");
+
+        String unixStyled = "$RABBITMQ_PW";
+        String unixStyled2 = "${RABBITMQ_PW}";
 
         String expanded = TraceyRabbitMQReceiverBuilder.expand(windowsEnvVar);
         assertEquals(expected, expanded);
