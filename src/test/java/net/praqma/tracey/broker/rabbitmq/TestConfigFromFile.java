@@ -46,7 +46,6 @@ public class TestConfigFromFile {
 
     }
 
-
     @Test
     public void parseEmptyConfigFile() throws Exception {
         URI path = TestConfigFromFile.class.getResource("broker_empty.config").toURI();
@@ -66,6 +65,7 @@ public class TestConfigFromFile {
         assertEquals("guest", impl.getSender().getFactory().getUsername());
         assertEquals("guest", impl.getSender().getFactory().getPassword());
     }
+
     @Test
     public void parseVariableExpansion() throws Exception {
         URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();

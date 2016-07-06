@@ -7,8 +7,6 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +31,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private ExchangeType type = ExchangeType.FANOUT;
     private TraceyRabbitMQMessageHandler handler;
     private Channel channel;
-    
+
     /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
         handler = new TraceyRabbitMQMessageHandler() {

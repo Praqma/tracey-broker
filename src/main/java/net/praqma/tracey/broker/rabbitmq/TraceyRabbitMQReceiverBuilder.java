@@ -39,7 +39,7 @@ public class TraceyRabbitMQReceiverBuilder {
             text = text.replace("$"+key, value);
             text = text.replace("%"+key+"%", value);
         }
-        
+
         return text;
     }
 
@@ -72,7 +72,7 @@ public class TraceyRabbitMQReceiverBuilder {
     }
 
     public TraceyRabbitMQSenderImpl buildSender() {
-        return new TraceyRabbitMQSenderImpl(host, username, password);
+        return new TraceyRabbitMQSenderImpl(expand(host), expand(username), expand(password));
     }
 
 
