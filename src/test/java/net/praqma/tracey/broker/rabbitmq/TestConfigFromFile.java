@@ -87,8 +87,6 @@ public class TestConfigFromFile {
     public void parseVariableExpansion() throws Exception {
         PowerMockito.mockStatic(System.class);
         Mockito.when(System.getenv()).thenReturn(ENV);
-        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_USER"))).thenReturn("rabbituser");
-        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_PW"))).thenReturn("rabbitpw");
 
         URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();
         File f = new File(path);
@@ -97,16 +95,16 @@ public class TestConfigFromFile {
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
-        assertEquals(System.getenv("RABBITMQ_PW"), receiver.getPassword());
+        assertEquals("rabbitpw", receiver.getPassword());
         assertEquals("guest", receiver.getUsername());
         assertEquals("fanout", receiver.getType().toString());
         assertEquals("tracey", receiver.getExchange());
 
         //Factory defaults
         assertEquals("guest", impl.getReceiver().getFactory().getUsername());
-        assertEquals(System.getenv("RABBITMQ_PW"), impl.getReceiver().getFactory().getPassword());
+        assertEquals("rabbitpw", impl.getReceiver().getFactory().getPassword());
         assertEquals("guest", impl.getSender().getFactory().getUsername());
-        assertEquals(System.getenv("RABBITMQ_PW"), impl.getSender().getFactory().getPassword());
+        assertEquals("rabbitpw", impl.getSender().getFactory().getPassword());
     }
 
     @Test
@@ -114,19 +112,16 @@ public class TestConfigFromFile {
 
         PowerMockito.mockStatic(System.class);
         Mockito.when(System.getenv()).thenReturn(ENV);
-        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_USER"))).thenReturn("rabbituser");
-        Mockito.when(System.getenv(Mockito.eq("RABBITMQ_PW"))).thenReturn("rabbitpw");
 
         String windowsEnvVar = "%RABBITMQ_PW%";
-        String expected = System.getenv("RABBITMQ_PW");
 
         String unixStyled = "$RABBITMQ_PW";
         String unixStyled2 = "${RABBITMQ_PW}";
 
         String expanded = TraceyRabbitMQReceiverBuilder.expand(windowsEnvVar);
-        assertEquals(expected, expanded);
-        assertEquals(expected, TraceyRabbitMQReceiverBuilder.expand(unixStyled));
-        assertEquals(expected, TraceyRabbitMQReceiverBuilder.expand(unixStyled2));
+        assertEquals("rabbitpw", expanded);
+        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled));
+        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled2));
 
     }
 }
