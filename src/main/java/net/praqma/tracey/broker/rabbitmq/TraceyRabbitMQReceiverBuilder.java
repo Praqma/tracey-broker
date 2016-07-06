@@ -60,8 +60,8 @@ public class TraceyRabbitMQReceiverBuilder {
             String host = getOrDefault((String) m.get("broker.rabbitmq.host"), "localhost");
             String exchange = getOrDefault((String) m.get("broker.rabbitmq.exchange"), "tracey");
             String typeString = getOrDefault((String) m.get("broker.rabbitmq.type"), "fanout");
-            String uName = (String) m.get("broker.rabbitmq.username");
-            String pWord = (String) m.get("broker.rabbitmq.password");
+            String uName = getOrDefault((String)m.get("broker.rabbitmq.username"), "guest");
+            String pWord = getOrDefault((String)m.get("broker.rabbitmq.password"), "guest");
             return new TraceyRabbitMQReceiverBuilder().
                     setHost(host).setExchange(exchange).
                     setPassword(pWord).

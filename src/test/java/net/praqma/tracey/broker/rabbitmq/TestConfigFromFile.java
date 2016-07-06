@@ -54,8 +54,8 @@ public class TestConfigFromFile {
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
-        assertNull(receiver.getPassword());
-        assertNull(receiver.getUsername());
+        assertEquals("guest", receiver.getPassword());
+        assertEquals("guest", receiver.getUsername());
         assertEquals("fanout", receiver.getType().toString());
         assertEquals("tracey", receiver.getExchange());
 
@@ -75,7 +75,7 @@ public class TestConfigFromFile {
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
         assertEquals(System.getenv("JAVA_HOME"), receiver.getPassword());
-        assertNull(receiver.getUsername());
+        assertEquals("guest", receiver.getUsername());
         assertEquals("fanout", receiver.getType().toString());
         assertEquals("tracey", receiver.getExchange());
 
