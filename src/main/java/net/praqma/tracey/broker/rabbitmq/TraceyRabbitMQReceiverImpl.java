@@ -106,7 +106,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
             System.out.println(" [tracey] Using queue    : " + qName);
             System.out.println(" [tracey] Exchange       : " + configuredExchange);
-            System.out.println(" [tracey] Routing key(s) : " + configuredExchange);
+            System.out.println(" [tracey] Routing key(s  :)");
             for(String s : filter.routingKeys()) {
                 System.out.println(" [tracey]  * "+s);
             }

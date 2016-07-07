@@ -7,6 +7,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.tracey.protocol.eiffel.EiffelEventOuterClass.EiffelEvent;
+import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
+import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
 
 /**
  * The job of the message dispatcher is to ensure that a give message ends up
@@ -30,7 +32,7 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
     public String createRoutingKey(byte[] payload) {
         String d = "tracey.event.default";
         try {
-            EiffelEvent evt = EiffelEvent.parseFrom(payload);
+            EiffelSourceChangeCreatedEvent evt = EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.parseFrom(payload);
             d = "tracey.event.eiffel."+evt.getClass().getSimpleName().toLowerCase();
             LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload)));
         } catch (InvalidProtocolBufferException error) {
