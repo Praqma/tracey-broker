@@ -45,6 +45,7 @@ public class TraceyEventTypeFilter {
 
     public TraceyEventTypeFilter(Channel c, String exchange) {
         this.c = c;
+        this.exchange = exchange;
     }
 
     /**
