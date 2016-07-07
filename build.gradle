@@ -23,7 +23,7 @@ dependencies {
 
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.6.2'
     compile 'com.github.Praqma:tracey-core:master-SNAPSHOT'
-    compile 'com.github.Praqma:tracey-protocol-eiffel:master-SNAPSHOT'
+    compile 'com.github.Praqma:tracey-protocol-eiffel:drop2-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
