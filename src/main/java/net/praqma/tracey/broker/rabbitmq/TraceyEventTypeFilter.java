@@ -23,6 +23,7 @@ public class TraceyEventTypeFilter {
 
     private Channel c;
     private String exchange;
+    private boolean acceptAll = false;
     private Set<Class<? extends GeneratedMessage>> events = new HashSet<>();
 
     public TraceyEventTypeFilter accept(Class<? extends GeneratedMessage> event) {
@@ -31,12 +32,12 @@ public class TraceyEventTypeFilter {
     }
 
     public List<String> routingKeys() {
-        if(events.isEmpty()) {
-            return Arrays.asList("tracey.event.eiffel.#");
+        if(events.isEmpty() || isAcceptAll()) {
+            return Arrays.asList("tracey.event.#");
         } else {
             ArrayList<String> types =  new ArrayList<>();
             for(Class<? extends GeneratedMessage> evt : events) {
-                types.add("tracey.event.eiffel."+evt.getClass().getSimpleName().toUpperCase());
+                types.add("tracey.event.eiffel."+evt.getClass().getSimpleName().toLowerCase());
             }
             return types;
         }
@@ -58,6 +59,20 @@ public class TraceyEventTypeFilter {
             c.queueBind(queueName, exchange, s);
         }
         return queueName;
+    }
+
+    /**
+     * @return the useAll
+     */
+    public boolean isAcceptAll() {
+        return acceptAll;
+    }
+
+    /**
+     * @param acceptAll
+     */
+    public void setAcceptAll(boolean acceptAll) {
+        this.acceptAll = acceptAll;
     }
 
 

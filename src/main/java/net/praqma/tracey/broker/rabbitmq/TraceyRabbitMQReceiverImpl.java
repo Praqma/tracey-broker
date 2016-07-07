@@ -101,6 +101,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
             TraceyEventTypeFilter filter = new TraceyEventTypeFilter(channel, exchange);
             filter.accept(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class);
+            filter.setAcceptAll(true);
             String qName = filter.apply();
 
             System.out.println(" [tracey] Using queue    : " + qName);
