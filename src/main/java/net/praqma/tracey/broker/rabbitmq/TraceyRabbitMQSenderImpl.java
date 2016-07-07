@@ -62,11 +62,11 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     @Override
     public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
         try {
+            TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();
             Connection co = factory.newConnection();
             Channel c = co.createChannel();
-            c.exchangeDeclare(destination, ExchangeType.FANOUT.toString());
-            c.basicPublish(destination, "", null, payload.getBytes());
-            c.close();
+            d.dispatch(c, destination, payload.getBytes());
+
             co.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);

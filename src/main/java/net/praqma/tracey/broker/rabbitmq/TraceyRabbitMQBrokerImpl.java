@@ -20,7 +20,9 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
      */
     public enum ExchangeType {
         FANOUT("fanout"),
+        TOPIC("topic"),
         DIRECT("direct");
+
 
         private String type;
 

@@ -15,13 +15,19 @@ test {
     jvmArgs '-noverify'
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
+
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.6.2'
     compile 'com.github.Praqma:tracey-core:master-SNAPSHOT'
+    compile('com.github.Praqma:tracey-protocol-eiffel:master-SNAPSHOT') { changing = true }
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.5'
     testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.6.5'
-    // https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4-rule-agent
     testCompile group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.6.5'
 }
 
@@ -30,7 +36,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'net.praqma.tracey'
             artifactId 'broker'
-            version '1.0-drop0'
+            version '1.0'
             from components.java
         }
     }
