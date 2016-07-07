@@ -22,7 +22,6 @@ configurations.all {
 dependencies {
 
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.6.2'
-    compile group: 'net.praqma.tracey.protocol', name: 'tracey-protocol-eiffel', version: '0.0.1'
     compile 'com.github.Praqma:tracey-core:master-SNAPSHOT'
     compile 'com.github.Praqma:tracey-protocol-eiffel:master-SNAPSHOT'
 
