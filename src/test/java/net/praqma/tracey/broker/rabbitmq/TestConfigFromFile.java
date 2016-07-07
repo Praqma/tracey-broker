@@ -23,7 +23,7 @@ public class TestConfigFromFile {
     @Rule
     public PowerMockRule r = new PowerMockRule();
 
-    static final Map<String,String> ENV = new HashMap<String, String>();
+    static final Map<String,String> ENV = new HashMap<>();
 
     static {
         ENV.put("RABBITMQ_USER", "rabbituser");

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import net.praqma.tracey.broker.TraceyIOError;
 import net.praqma.tracey.broker.TraceyReceiver;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
+import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 
 /**
  * <h2>Default RabbitMQ receiver implementation</h2>
@@ -97,13 +98,18 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         try {
             channel = createChannel();
             String configuredExchange = source != null ? source : getExchange();
-            channel.exchangeDeclare(configuredExchange, type.toString());
-            String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, configuredExchange, "");
 
-            System.out.println(" [tracey] Using queue: " + queueName);
-            System.out.println(" [tracey] Exchange   : " + configuredExchange);
-            System.out.println(" [tracey] Host       : " + getHost());
+            TraceyEventTypeFilter filter = new TraceyEventTypeFilter(channel, exchange);
+            filter.accept(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class);
+            String qName = filter.apply();
+
+            System.out.println(" [tracey] Using queue    : " + qName);
+            System.out.println(" [tracey] Exchange       : " + configuredExchange);
+            System.out.println(" [tracey] Routing key(s) : " + configuredExchange);
+            for(String s : filter.routingKeys()) {
+                System.out.println(" [tracey]  * "+s);
+            }
+            System.out.println(" [tracey] Host        : " + getHost());
             System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
 
             Consumer c = new DefaultConsumer(channel) {
@@ -114,8 +120,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
             };
 
-            return channel.basicConsume(queueName, false, c);
-
+            return channel.basicConsume(qName, false, c);
 
         } catch (IOException | TimeoutException ex) {
             LOG.log(Level.SEVERE, "Error while recieving", ex);

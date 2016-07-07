@@ -66,7 +66,6 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
             Connection co = factory.newConnection();
             Channel c = co.createChannel();
             d.dispatch(c, destination, payload.getBytes());
-
             co.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);

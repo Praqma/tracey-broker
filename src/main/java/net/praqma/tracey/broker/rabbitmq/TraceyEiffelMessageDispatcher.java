@@ -8,7 +8,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.tracey.protocol.eiffel.EiffelEventOuterClass.EiffelEvent;
 
-
+/**
+ * The job of the message dispatcher is to ensure that a give message ends up
+ * in the correct 'queue'. For rabbitmq that means we need to send the message to
+ * the correct exchanges for consumption. We need to decide the routing key based on
+ * the payload.
+ *
+ * @author Mads
+ */
 public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
 
     private static final Logger LOG = Logger.getLogger(TraceyEiffelMessageDispatcher.class.getName());
@@ -25,8 +32,9 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
         try {
             EiffelEvent evt = EiffelEvent.parseFrom(payload);
             d = "tracey.event.eiffel."+evt.getClass().getSimpleName().toLowerCase();
+            LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload)));
         } catch (InvalidProtocolBufferException error) {
-            LOG.log(Level.SEVERE, "Non eiffel message recieved", error);
+            LOG.log(Level.SEVERE, String.format("Non eiffel message received, using routing key %s", d), error);
         }
 
         return d;
