@@ -1,6 +1,7 @@
 package net.praqma.tracey.broker.rabbitmq;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
@@ -131,7 +132,11 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
     public void cancel(String consumerTag) throws IOException {
         if(consumerTag != null && channel != null) {
-            channel.basicCancel(consumerTag);
+            try {
+                channel.basicCancel(consumerTag);
+            } catch (AlreadyClosedException ignore) {
+                LOG.info("Ignoring, connection was forcibly closed elsewhere");
+            }
         }
     }
 
