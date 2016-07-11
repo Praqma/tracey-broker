@@ -26,7 +26,7 @@ public class TraceyEiffelMessageValidator {
         if (!isA(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class, payload)) {
             return null;
         }
-        JSONObject obj = new JSONObject(payload).getJSONObject("gitIdentifier");
+        JSONObject obj = new JSONObject(payload).getJSONObject("data").getJSONObject("gitIdentifier");
         return obj;
     }
 }

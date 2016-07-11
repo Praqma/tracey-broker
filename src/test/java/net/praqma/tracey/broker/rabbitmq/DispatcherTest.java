@@ -5,6 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -28,5 +31,16 @@ public class DispatcherTest {
         byte[] data = Files.readAllBytes(p);
         String key = dispatcher.createRoutingKey(data);
         assertEquals("tracey.event.default", key);
+    }
+
+    @Test
+    public void testGitParsing() throws Exception {
+        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
+        Path p = Paths.get(url);
+        byte[] data = Files.readAllBytes(p);
+        String dataString = new String(data, "utf-8");
+        assertTrue(TraceyEiffelMessageValidator.isA(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class, dataString));
+        assertTrue(dataString.contains("gitIdentifier"));
+        assertNotNull(TraceyEiffelMessageValidator.getGitIdentifier(dataString));
     }
 }
