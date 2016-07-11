@@ -13,6 +13,7 @@ import net.praqma.tracey.core.TraceyDefaultParserImpl;
  */
 public class TraceyRabbitMQReceiverBuilder {
     private String host = "localhost";
+    private int port = 5672;
     private String username;
     private TraceyRabbitMQBrokerImpl.ExchangeType type = TraceyRabbitMQBrokerImpl.ExchangeType.FANOUT;
     private String exchange = "tracey";
@@ -21,7 +22,7 @@ public class TraceyRabbitMQReceiverBuilder {
     private String password;
 
     public TraceyRabbitMQReceiverImpl build() {
-        return new TraceyRabbitMQReceiverImpl(expand(host), expand(exchange), type, expand(password), expand(username));
+        return new TraceyRabbitMQReceiverImpl(expand(host), expand(exchange), type, expand(password), expand(username), port);
     }
 
     public static String expand(String original) {
@@ -62,9 +63,12 @@ public class TraceyRabbitMQReceiverBuilder {
             String typeString = getOrDefault((String) m.get("broker.rabbitmq.type"), "fanout");
             String uName = getOrDefault((String)m.get("broker.rabbitmq.username"), "guest");
             String pWord = getOrDefault((String)m.get("broker.rabbitmq.password"), "guest");
+            String pNumber = getOrDefault((String)m.get("broker.rabbitmq.port"), "5672");
+
             return new TraceyRabbitMQReceiverBuilder().
                     setHost(host).setExchange(exchange).
                     setPassword(pWord).
+                    setPort(Integer.parseInt(pNumber)).
                     setUsername(uName).
                     setType(TraceyRabbitMQBrokerImpl.ExchangeType.valueOf(typeString.toUpperCase()));
         }
@@ -72,7 +76,7 @@ public class TraceyRabbitMQReceiverBuilder {
     }
 
     public TraceyRabbitMQSenderImpl buildSender() {
-        return new TraceyRabbitMQSenderImpl(expand(host), expand(username), expand(password));
+        return new TraceyRabbitMQSenderImpl(expand(host), expand(username), expand(password), getPort());
     }
 
 
@@ -165,6 +169,21 @@ public class TraceyRabbitMQReceiverBuilder {
      */
     public TraceyRabbitMQReceiverBuilder setUsername(String username) {
         this.username = username;
+        return this;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public TraceyRabbitMQReceiverBuilder setPort(int port) {
+        this.port = port;
         return this;
     }
 }

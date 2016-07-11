@@ -34,6 +34,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQSenderImpl.class.getName());
     private ConnectionFactory factory = new ConnectionFactory();
     private String host = "localhost";
+    private int port = 5672;
     private String username;
     private String pw;
 
@@ -41,10 +42,11 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
 
     public TraceyRabbitMQSenderImpl() { }
 
-    public TraceyRabbitMQSenderImpl(String host, String username, String password) {
+    public TraceyRabbitMQSenderImpl(String host, String username, String password, int port) {
         this.host = host;
         this.username = username;
         this.pw = password;
+        this.port = port;
     }
 
     public final void configure() {
@@ -55,7 +57,8 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
 
         if(username != null)
             factory.setUsername(getUsername());
-
+        
+        factory.setPort(getPort());
         factory.setHost(getHost());
     }
 
@@ -131,5 +134,19 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
      */
     public void setFactory(ConnectionFactory factory) {
         this.factory = factory;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 }

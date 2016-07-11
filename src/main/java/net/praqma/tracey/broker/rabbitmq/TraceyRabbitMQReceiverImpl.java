@@ -27,6 +27,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQReceiverImpl.class.getName());
     private ConnectionFactory factory = new ConnectionFactory();
     private String host;
+    private int port;
     private String exchange;
     private String password;
     private String username;
@@ -67,11 +68,12 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
      * @param pw  password for the broker
      * @param username
      */
-    public TraceyRabbitMQReceiverImpl(String host, String exchange, ExchangeType type, String pw, String username) {
+    public TraceyRabbitMQReceiverImpl(String host, String exchange, ExchangeType type, String pw, String username, int port) {
         this.host = host;
         this.exchange = exchange;
         this.username = username;
         this.type = type;
+        this.port = port;
         this.password = pw;
         this.handler = new TraceyRabbitMQMessageHandler() {
             @Override
@@ -90,7 +92,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         if (getUsername() != null) {
             factory.setUsername(getUsername());
         }
-
+        factory.setPort(getPort());
         factory.setHost(getHost());
     }
 
@@ -250,5 +252,19 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
      */
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 }

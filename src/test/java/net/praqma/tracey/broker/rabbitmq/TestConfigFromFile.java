@@ -58,8 +58,11 @@ public class TestConfigFromFile {
         //Factory
         assertEquals("myuser", impl.getReceiver().getFactory().getUsername());
         assertEquals("s0m3p4ss", impl.getReceiver().getFactory().getPassword());
+        assertEquals(4444, impl.getReceiver().getFactory().getPort());
+
         assertEquals("myuser", impl.getSender().getFactory().getUsername());
         assertEquals("s0m3p4ss", impl.getSender().getFactory().getPassword());
+        assertEquals(4444, impl.getSender().getFactory().getPort());
 
     }
 
@@ -79,6 +82,7 @@ public class TestConfigFromFile {
         //Factory defaults
         assertEquals("guest", impl.getReceiver().getFactory().getUsername());
         assertEquals("guest", impl.getReceiver().getFactory().getPassword());
+        
         assertEquals("guest", impl.getSender().getFactory().getUsername());
         assertEquals("guest", impl.getSender().getFactory().getPassword());
     }
