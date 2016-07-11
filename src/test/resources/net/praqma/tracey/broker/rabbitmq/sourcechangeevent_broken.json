@@ -1,7 +1,4 @@
-{
- "meta": {
-   "id": "cdc049d4-eb77-4ab7-a96a-b0c91711354c",
-   "type": "EiffelSourceChangeCreatedEvent",
+ceChangeCreatedEvent",
    "time": "1467899725350",
    "source": {
      "domainId": "domainId",
@@ -17,15 +14,8 @@
  },
  "links": [{
    "type": "PREVIOUS_VERSION",
-   "id": "8a718a03-f473-4e61-9bae-e986885fee18"
- }, {
-   "type": "CAUSE",
-   "id": "e5ae20a3-0d79-4513-8819-2da9b13d45b8"
- }],
- "data": {
-   "author": {
-     "name": "Andrey Devyatkin",
-     "email": "andrey.a.devyatkin@gmail.com"
+
+a.devyatkin@gmail.com"
    },
    "change": {
      "insertions": 246,

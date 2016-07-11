@@ -1,13 +1,11 @@
 package net.praqma.tracey.broker.rabbitmq;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
-import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent;
+import org.json.*;
 
 /**
  * The job of the message dispatcher is to ensure that a give message ends up
@@ -31,13 +29,21 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
     public String createRoutingKey(byte[] payload) {
         String d = "tracey.event.default";
         try {
-            EiffelSourceChangeCreatedEvent evt = EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.parseFrom(payload);
-            d = "tracey.event.eiffel."+evt.getClass().getSimpleName().toLowerCase();
-            LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload)));
-        } catch (InvalidProtocolBufferException error) {
+            String type = new JSONObject(new String(payload, "utf-8")).getJSONObject("meta").getString("type");
+            d = "tracey.event.eiffel."+type.toLowerCase();
+            LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload, "utf-8")));
+        } catch (Exception error) {
             LOG.log(Level.SEVERE, String.format("Non eiffel message received, using routing key %s", d), error);
         }
 
         return d;
+    }
+
+    private String discardInnerClassFromName(String name) {
+        if(name.contains(".")) {
+            String[] split = name.split(".");
+            return split[split.length-1];
+        }
+        return name;
     }
 }

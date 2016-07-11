@@ -37,7 +37,7 @@ public class TraceyEventTypeFilter {
         } else {
             ArrayList<String> types =  new ArrayList<>();
             for(Class<? extends GeneratedMessage> evt : events) {
-                types.add("tracey.event.eiffel."+evt.getClass().getSimpleName().toLowerCase());
+                types.add("tracey.event.eiffel."+evt.getSimpleName().toLowerCase());
             }
             return types;
         }
