@@ -6,23 +6,19 @@
 package net.praqma.tracey.broker.rabbitmq;
 
 import com.google.protobuf.GeneratedMessage;
-import com.rabbitmq.client.Channel;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
+import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 
 /**
  *
  * @author Mads
  */
-public class TraceyEventTypeFilter {
+public class TraceyEventTypeFilter implements TraceyFilter {
 
-    private Channel c;
-    private String exchange;
     private boolean acceptAll = false;
     private Set<Class<? extends GeneratedMessage>> events = new HashSet<>();
 
@@ -30,6 +26,14 @@ public class TraceyEventTypeFilter {
         events.add(event);
         return this;
     }
+
+    public TraceyEventTypeFilter accept(String... className) throws ClassNotFoundException {
+        for(String clazz : className) {
+            events.add((Class<? extends GeneratedMessage>)Class.forName(clazz));
+        }
+        return this;
+    }
+
 
     public List<String> routingKeys() {
         if(events.isEmpty() || isAcceptAll()) {
@@ -43,23 +47,22 @@ public class TraceyEventTypeFilter {
         }
     }
 
-    public TraceyEventTypeFilter(Channel c, String exchange) {
-        this.c = c;
-        this.exchange = exchange;
+    public TraceyEventTypeFilter() { }
+
+    public TraceyEventTypeFilter(Class<? extends GeneratedMessage>... evts) {
+        events.addAll(Arrays.asList(evts));
     }
 
-    /**
-     * Applies settings, and returns the name of the created queue.
-     * @return The name of the generated queue.
-     * @throws java.io.IOException when we fail to bind a queue to the exchange
-     */
-    public String apply() throws IOException {
-        c.exchangeDeclare(exchange, ExchangeType.TOPIC.toString());
-        String queueName = c.queueDeclare().getQueue();
-        for(String s : routingKeys()) {
-            c.queueBind(queueName, exchange, s);
+    public TraceyEventTypeFilter(String... eventTypes) throws ClassNotFoundException {
+        if(eventTypes != null) {
+            for(String clazz : eventTypes) {
+                events.add((Class<? extends GeneratedMessage>)Class.forName(clazz));
+            }
         }
-        return queueName;
+    }
+
+    public static String getClassNameForEiffelSourceChangeCreatedEvent() {
+        return EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class.getName();
     }
 
     /**
@@ -76,5 +79,13 @@ public class TraceyEventTypeFilter {
         this.acceptAll = acceptAll;
     }
 
+    @Override
+    public List<String> preReceive() {
+        return routingKeys();
+    }
 
+    @Override
+    public String postReceive(String payload) {
+        return payload;
+    }
 }

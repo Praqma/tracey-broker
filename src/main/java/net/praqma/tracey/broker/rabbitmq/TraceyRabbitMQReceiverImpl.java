@@ -8,13 +8,16 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.tracey.broker.TraceyIOError;
 import net.praqma.tracey.broker.TraceyReceiver;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
-import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 
 /**
  * <h2>Default RabbitMQ receiver implementation</h2>
@@ -34,6 +37,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private ExchangeType type = ExchangeType.FANOUT;
     private TraceyRabbitMQMessageHandler handler;
     private Channel channel;
+    private List<TraceyFilter> filters = new ArrayList<>();
 
     /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
@@ -99,20 +103,39 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     @Override
     public String receive(String source) throws TraceyIOError {
         try {
+
             channel = createChannel();
             String configuredExchange = source != null ? source : getExchange();
 
-            TraceyEventTypeFilter filter = new TraceyEventTypeFilter(channel, exchange);
-            filter.accept(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class);
-            filter.setAcceptAll(true);
-            String qName = filter.apply();
+            Set<String> routingKeys = new HashSet<>();
 
-            System.out.println(" [tracey] Using queue    : " + qName);
+            for(TraceyFilter tf : getFilters()) {
+                routingKeys.addAll(tf.preReceive());
+            }
+
+            channel.exchangeDeclare(configuredExchange, ExchangeType.TOPIC.toString());
+            String queueName = channel.queueDeclare().getQueue();
+
+            if(routingKeys.isEmpty()) {
+                channel.queueBind(queueName, configuredExchange, "#");
+            } else {
+                for(String s : routingKeys) {
+                    channel.queueBind(queueName, configuredExchange, s);
+                }
+            }
+
+            System.out.println(" [tracey] Using queue    : " + queueName);
             System.out.println(" [tracey] Exchange       : " + configuredExchange);
-            System.out.println(" [tracey] Routing key(s  :)");
-            for(String s : filter.routingKeys()) {
+            System.out.println(" [tracey] Routing key(s) :");
+
+            if(routingKeys.isEmpty()) {
+                System.out.println(" [tracey]  * #");
+            }
+
+            for(String s : routingKeys) {
                 System.out.println(" [tracey]  * "+s);
             }
+            
             System.out.println(" [tracey] Host        : " + getHost());
             System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
 
@@ -124,7 +147,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
             };
 
-            return channel.basicConsume(qName, false, c);
+            return channel.basicConsume(queueName, false, c);
 
         } catch (IOException | TimeoutException ex) {
             LOG.log(Level.SEVERE, "Error while recieving", ex);
@@ -266,5 +289,19 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+
+    /**
+     * @return the filters
+     */
+    public List<TraceyFilter> getFilters() {
+        return filters;
+    }
+
+    /**
+     * @param filters the filters to set
+     */
+    public void setFilters(List<TraceyFilter> filters) {
+        this.filters = filters;
     }
 }
