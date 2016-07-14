@@ -5,9 +5,18 @@
  */
 package net.praqma.tracey.broker.rabbitmq;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -16,11 +25,32 @@ import org.junit.Test;
  */
 public class TraceyEiffelTypeFilterTest {
 
+    static TraceyEventTypeFilter filter = new TraceyEventTypeFilter();
+
+    @BeforeClass
+    public static void setup() throws ClassNotFoundException {
+        filter.accept("EiffelSourceChangeCreatedEvent");
+    }
+
     @Test
     public void testThatAcceptAllIsWorking() throws Exception {
-        TraceyEventTypeFilter filter = new TraceyEventTypeFilter();
-        filter.accept("EiffelSourceChangeCreatedEvent");
         List<String> classes = filter.routingKeys();
         assertEquals("tracey.event.eiffel.eiffelsourcechangecreatedevent", classes.get(0));
     }
+
+    @Test
+    public void payloadThatDoesNotGetFiltered() {
+        assertEquals("Not eiffel message. Should pass.", filter.postReceive("Not eiffel message. Should pass."));
+    }
+
+    @Test
+    public void acceptPayloadThatPassThroughFilter() throws IOException, URISyntaxException {
+        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
+        Path p = Paths.get(url);
+        byte[] data = Files.readAllBytes(p);
+        String output = filter.postReceive(new String(data, "UTF-8"));
+        assertNotNull(output);
+        assertEquals(new String(data,"UTF-8"), output);
+    }
+
 }
