@@ -6,7 +6,6 @@
 package net.praqma.tracey.broker.rabbitmq;
 
 import java.util.List;
-import net.praqma.tracey.protocol.eiffel.events.EiffelSourceChangeCreatedEventOuterClass;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class TraceyEiffelTypeFilterTest {
     @Test
     public void testThatAcceptAllIsWorking() throws Exception {
         TraceyEventTypeFilter filter = new TraceyEventTypeFilter();
-        filter.accept(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class);
+        filter.accept("EiffelSourceChangeCreatedEvent");
         List<String> classes = filter.routingKeys();
         assertEquals("tracey.event.eiffel.eiffelsourcechangecreatedevent", classes.get(0));
     }
