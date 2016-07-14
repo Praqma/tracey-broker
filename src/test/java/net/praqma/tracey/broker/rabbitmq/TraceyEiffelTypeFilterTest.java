@@ -53,4 +53,11 @@ public class TraceyEiffelTypeFilterTest {
         assertEquals(new String(data,"UTF-8"), output);
     }
 
+    @Test
+    public void acceptAdditonal() throws ClassNotFoundException {
+        filter.accept("EiffelFutureEvent");
+        List<String> classes = filter.routingKeys();
+        assertEquals("tracey.event.eiffel.eiffelfutureevent", classes.get(1));
+    }
+
 }
