@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,12 +42,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
 
     /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
-        handler = new TraceyRabbitMQMessageHandler() {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                System.out.println("[tracey] " + new String(body, "UTF-8"));
-            }
-        };
+        handler = new TraceyConsolePrintHandler();
     }
 
     /**
@@ -79,12 +75,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         this.type = type;
         this.port = port;
         this.password = pw;
-        this.handler = new TraceyRabbitMQMessageHandler() {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                System.out.println("[tracey] " + new String(body, "UTF-8"));
-            }
-        };
+        this.handler = new TraceyConsolePrintHandler();
     }
 
     public final void configure() {
@@ -135,7 +126,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
             for(String s : routingKeys) {
                 System.out.println(" [tracey]  * "+s);
             }
-            
+
             System.out.println(" [tracey] Host        : " + getHost());
             System.out.println(" [tracey] Waiting for messages. To exit press CTRL+C");
 
@@ -145,6 +136,17 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
                     handler.handleDelivery(consumerTag, envelope, properties, body);
                 }
 
+                @Override
+                public void handleCancel(String consumerTag) throws IOException {
+                    super.handleCancel(consumerTag);
+                    handler.handleCancel(consumerTag);
+                }
+
+                @Override
+                public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
+                    super.handleShutdownSignal(consumerTag, sig); //To change body of generated methods, choose Tools | Templates.
+                    handler.handleShutdownSignal(consumerTag, sig);
+                }
             };
 
             return channel.basicConsume(queueName, false, c);

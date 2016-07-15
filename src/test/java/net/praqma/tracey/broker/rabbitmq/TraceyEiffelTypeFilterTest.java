@@ -15,7 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class TraceyEiffelTypeFilterTest {
     static TraceyEventTypeFilter filter = new TraceyEventTypeFilter();
 
     @BeforeClass
-    public static void setup() throws ClassNotFoundException {
+    public static void setup() {
         filter.accept("EiffelSourceChangeCreatedEvent");
     }
 

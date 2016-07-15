@@ -13,7 +13,7 @@ public class TraceyEventTypeFilter implements TraceyFilter {
 
     private Set<String> events = new HashSet<>();
 
-    public TraceyEventTypeFilter accept(String... classNames) throws ClassNotFoundException {
+    public TraceyEventTypeFilter accept(String... classNames) {
         events.addAll(Arrays.asList(classNames));
         return this;
     }

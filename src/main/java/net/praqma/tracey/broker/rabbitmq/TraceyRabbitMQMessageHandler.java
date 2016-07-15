@@ -2,6 +2,7 @@ package net.praqma.tracey.broker.rabbitmq;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownSignalException;
 import java.io.IOException;
 
 /**
@@ -12,4 +13,6 @@ import java.io.IOException;
  */
 public interface TraceyRabbitMQMessageHandler {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, final byte[] body) throws IOException;
+    public void handleCancel(String consumerTag) throws IOException;
+    public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig);
 }
