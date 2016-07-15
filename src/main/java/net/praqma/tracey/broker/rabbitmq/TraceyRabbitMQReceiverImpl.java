@@ -89,6 +89,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
         }
         factory.setPort(getPort());
         factory.setHost(getHost());
+        factory.setAutomaticRecoveryEnabled(true);
     }
 
     @Override
@@ -147,6 +148,12 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
                     super.handleShutdownSignal(consumerTag, sig); //To change body of generated methods, choose Tools | Templates.
                     handler.handleShutdownSignal(consumerTag, sig);
                 }
+
+                @Override
+                public void handleRecoverOk(String consumerTag) {
+                    LOG.info(String.format("Succesfully recovered connection for %s", consumerTag));
+                }
+
             };
 
             return channel.basicConsume(queueName, false, c);
