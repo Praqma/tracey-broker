@@ -50,7 +50,6 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     }
 
     public final void configure() {
-
         if(pw != null && !pw.trim().isEmpty()) {
             factory.setPassword(getPw());
         }

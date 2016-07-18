@@ -33,7 +33,7 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
             d = "tracey.event.eiffel."+type.toLowerCase();
             LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload, "utf-8")));
         } catch (Exception error) {
-            LOG.log(Level.SEVERE, String.format("Non eiffel message received, using routing key %s", d), error);
+            LOG.log(Level.INFO, String.format("Non eiffel message received, using routing key %s", d));
         }
 
         return d;
