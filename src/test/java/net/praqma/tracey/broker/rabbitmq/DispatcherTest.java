@@ -39,7 +39,7 @@ public class DispatcherTest {
         Path p = Paths.get(url);
         byte[] data = Files.readAllBytes(p);
         String dataString = new String(data, "utf-8");
-        assertTrue(TraceyEiffelMessageValidator.isA(EiffelSourceChangeCreatedEventOuterClass.EiffelSourceChangeCreatedEvent.class, dataString));
+        assertTrue(TraceyEiffelMessageValidator.isA("EiffelSourceChangeCreatedEvent", dataString));
         assertTrue(dataString.contains("gitIdentifier"));
         assertNotNull(TraceyEiffelMessageValidator.getGitIdentifier(dataString));
     }

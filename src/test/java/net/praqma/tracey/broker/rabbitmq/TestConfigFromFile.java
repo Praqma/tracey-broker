@@ -49,6 +49,7 @@ public class TestConfigFromFile {
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
+        impl.configure();
         assertEquals("some.host.name", receiver.getHost());
         assertEquals("s0m3p4ss", receiver.getPassword());
         assertEquals("fanout", receiver.getType().toString());
@@ -63,7 +64,7 @@ public class TestConfigFromFile {
         assertEquals("myuser", impl.getSender().getFactory().getUsername());
         assertEquals("s0m3p4ss", impl.getSender().getFactory().getPassword());
         assertEquals(4444, impl.getSender().getFactory().getPort());
-
+        assertEquals(4444, impl.getReceiver().getFactory().getPort());
     }
 
     @Test
@@ -71,7 +72,7 @@ public class TestConfigFromFile {
         URI path = TestConfigFromFile.class.getResource("broker_empty.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
-
+        impl.configure();
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
         assertEquals("guest", receiver.getPassword());
@@ -82,7 +83,7 @@ public class TestConfigFromFile {
         //Factory defaults
         assertEquals("guest", impl.getReceiver().getFactory().getUsername());
         assertEquals("guest", impl.getReceiver().getFactory().getPassword());
-        
+
         assertEquals("guest", impl.getSender().getFactory().getUsername());
         assertEquals("guest", impl.getSender().getFactory().getPassword());
     }
@@ -95,7 +96,7 @@ public class TestConfigFromFile {
         URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
-
+        impl.configure();
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
         assertEquals("localhost", receiver.getHost());
