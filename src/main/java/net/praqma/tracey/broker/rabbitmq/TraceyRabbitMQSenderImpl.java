@@ -149,4 +149,11 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     public void setPort(int port) {
         this.port = port;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s@%s:%s", factory.getUsername(), factory.getHost(), factory.getPort());
+    }
+
+
 }
