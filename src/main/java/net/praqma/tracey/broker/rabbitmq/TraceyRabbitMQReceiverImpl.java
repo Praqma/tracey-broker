@@ -313,4 +313,10 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     public void setFilters(List<TraceyFilter> filters) {
         this.filters = filters;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s@%s:%s", factory.getUsername(), factory.getHost(), factory.getPort());
+    }
+
 }
