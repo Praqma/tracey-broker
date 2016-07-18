@@ -181,6 +181,7 @@ public class TraceyRabbitMQReceiverBuilder {
 
     /**
      * @param port the port to set
+     * @return
      */
     public TraceyRabbitMQReceiverBuilder setPort(int port) {
         this.port = port;

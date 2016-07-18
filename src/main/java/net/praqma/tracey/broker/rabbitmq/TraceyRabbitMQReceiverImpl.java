@@ -95,7 +95,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     @Override
     public String receive(String source) throws TraceyIOError {
         try {
-
+            configure();
             channel = createChannel();
             String configuredExchange = source != null ? source : getExchange();
 

@@ -57,7 +57,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
 
         if(username != null)
             factory.setUsername(getUsername());
-        
+
         factory.setPort(getPort());
         factory.setHost(getHost());
     }
@@ -65,6 +65,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     @Override
     public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
         try {
+            configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();
             Connection co = factory.newConnection();
             Channel c = co.createChannel();

@@ -40,6 +40,11 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
         super(receiver, sender);
     }
 
+    public void configure() {
+        receiver.configure();
+        sender.configure();
+    }
+
 
     /**
      * Default constructor. Makes a very basic receiver and sender.
@@ -50,7 +55,6 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
                 .setHost("localhost")
                 .setType(ExchangeType.FANOUT).build();
         this.sender = new TraceyRabbitMQSenderImpl();
-        sender.configure();
     }
 
     /**
@@ -62,19 +66,14 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
                 .setExchange("tracey")
                 .setHost(host)
                 .setType(ExchangeType.FANOUT).build();
-        receiver.configure();
         this.sender = new TraceyRabbitMQSenderImpl();
-        sender.configure();
     }
 
     public TraceyRabbitMQBrokerImpl(File configFile) {
         TraceyRabbitMQReceiverBuilder builder = TraceyRabbitMQReceiverBuilder
                 .buildFromConfigFile(configFile);
         this.receiver = builder.build();
-        receiver.configure();
-
         this.sender = builder.buildSender();
-        sender.configure();
     }
 
     /**
@@ -93,12 +92,18 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
                 .setPassword(password)
                 .setExchange(exchange)
                 .setType(type).build();
-        receiver.configure();
+
         this.sender = new TraceyRabbitMQSenderImpl();
         sender.setHost(host);
         sender.setPw(password);
         sender.setType(type);
         sender.setUsername(user);
-        sender.configure();
     }
+
+    public TraceyRabbitMQBrokerImpl(String host, String password, String user, ExchangeType type, String exchange, int port) {
+        this(host,password,user,type,exchange);
+        sender.setPort(port);
+        receiver.setPort(port);
+    }
+
 }
