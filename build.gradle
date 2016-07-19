@@ -1,6 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'wrapper'
-apply plugin: 'maven-publish'
 
 sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -34,13 +33,10 @@ dependencies {
     testCompile group: 'org.powermock', name: 'powermock-module-junit4-rule-agent', version: '1.6.5'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId 'net.praqma.tracey'
-            artifactId 'broker'
-            version '1.0'
-            from components.java
-        }
+jar {
+    from(configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
 }
