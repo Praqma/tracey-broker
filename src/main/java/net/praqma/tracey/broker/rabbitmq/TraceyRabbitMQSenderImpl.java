@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.tracey.broker.TraceyIOError;
 import net.praqma.tracey.broker.TraceySender;
-import net.praqma.tracey.broker.TraceyValidatorError;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 
 /**
@@ -62,7 +61,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     }
 
     @Override
-    public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
+    public String send(String payload, String destination) throws TraceyIOError {
         try {
             configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();

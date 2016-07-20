@@ -16,20 +16,15 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
 
     protected T receiver;
     protected S sender;
-    protected TraceyMessageValidator validator;
 
     /**
      *
      * @param payload  the payload you want to send using the {@link TraceySender}
      * @param destination  an abstract notation on where the payload goes
      * @return the sent payload
-     * @throws TraceyValidatorError if the {@link TraceyMessageValidator} failed to validate the message that needs to be sent
      * @throws TraceyIOError if the chosen middleware for message sending encounters a network error
      */
-    public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
-        if(validator != null) {
-            validator.validateSend(payload);
-        }
+    public String send(String payload, String destination) throws TraceyIOError {
         return sender.send(payload, destination);
     }
 
@@ -37,13 +32,9 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
      *
      * @param destination  the abstract representation of what we want to receive (listen). Receive can be blocking.
      * @return the received message
-     * @throws TraceyValidatorError if the {@link TraceyMessageValidator} failed to validate the received message
      * @throws TraceyIOError if the chosen middleware for receiving messages encounters a network error.
      */
-    public String receive(String destination) throws TraceyValidatorError, TraceyIOError {
-        if(validator != null) {
-            validator.validateReceive(destination);
-        }
+    public String receive(String destination) throws TraceyIOError {
         return receiver.receive(destination);
     }
 
@@ -57,20 +48,6 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
     public TraceyBroker(T receiver, S sender) {
         this.sender = sender;
         this.receiver = receiver;
-    }
-
-    /**
-     * @return the validator
-     */
-    public TraceyMessageValidator getValidator() {
-        return validator;
-    }
-
-    /**
-     * @param validator the validator to set
-     */
-    public void setValidator(TraceyMessageValidator validator) {
-        this.validator = validator;
     }
 
     /**
