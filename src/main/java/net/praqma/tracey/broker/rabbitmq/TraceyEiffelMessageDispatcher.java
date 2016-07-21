@@ -2,6 +2,7 @@ package net.praqma.tracey.broker.rabbitmq;
 
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,18 +33,10 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
             String type = new JSONObject(new String(payload, "utf-8")).getJSONObject("meta").getString("type");
             d = "tracey.event.eiffel."+type.toLowerCase();
             LOG.info(String.format("Created routing key %s for payload:%n%s", d, new String(payload, "utf-8")));
-        } catch (Exception error) {
+        } catch (UnsupportedEncodingException | JSONException error) {
             LOG.log(Level.INFO, String.format("Non eiffel message received, using routing key %s", d));
         }
 
         return d;
-    }
-
-    private String discardInnerClassFromName(String name) {
-        if(name.contains(".")) {
-            String[] split = name.split(".");
-            return split[split.length-1];
-        }
-        return name;
     }
 }

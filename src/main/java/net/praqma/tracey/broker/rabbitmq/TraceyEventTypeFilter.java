@@ -18,7 +18,6 @@ public class TraceyEventTypeFilter implements TraceyFilter {
         return this;
     }
 
-
     public List<String> routingKeys() {
         if(events.isEmpty()) {
             return Arrays.asList("tracey.event.#");
@@ -33,7 +32,7 @@ public class TraceyEventTypeFilter implements TraceyFilter {
 
     public TraceyEventTypeFilter() { }
 
-    public TraceyEventTypeFilter(String... eventTypes) throws ClassNotFoundException {
+    public TraceyEventTypeFilter(String... eventTypes) {
         events.addAll(Arrays.asList(eventTypes));
     }
 

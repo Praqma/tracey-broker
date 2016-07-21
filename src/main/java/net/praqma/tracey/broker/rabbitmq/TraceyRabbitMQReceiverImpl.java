@@ -40,7 +40,6 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     private Channel channel;
     private List<TraceyFilter> filters = new ArrayList<>();
 
-    /** Default constructor */
     public TraceyRabbitMQReceiverImpl() {
         handler = new TraceyConsolePrintHandler();
     }
@@ -62,11 +61,12 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     /**
      * A more detailed constructor. Used in {@link TraceyRabbitMQReceiverBuilder}
 
-     * @param host  the RabbitMQ host
-     * @param exchange  the exchange to connect to
-     * @param type  the type of the exchange to us
-     * @param pw  password for the broker
-     * @param username
+     * @param host the RabbitMQ host
+     * @param exchange the exchange to connect to
+     * @param type the type of the exchange to us
+     * @param pw password for the broker
+     * @param port port for RabbitMQ server
+     * @param username The user name to use while creating connections to RabbitMQ
      */
     public TraceyRabbitMQReceiverImpl(String host, String exchange, ExchangeType type, String pw, String username, int port) {
         this.host = host;
