@@ -21,7 +21,7 @@ public class PayloadRegexFilter implements TraceyFilter {
 
     public PayloadRegexFilter(String regex) {
         this.regex = regex;
-        regexCompiled = Pattern.compile(this.regex);
+        regexCompiled = Pattern.compile(this.regex, Pattern.MULTILINE);
     }
 
     @Override
