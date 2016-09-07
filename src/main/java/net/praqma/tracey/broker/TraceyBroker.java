@@ -24,8 +24,8 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
      * @return the sent payload
      * @throws TraceyIOError if the chosen middleware for message sending encounters a network error
      */
-    public String send(String payload, String destination) throws TraceyIOError {
-        return sender.send(payload, destination);
+    public String send(String payload, String destination, TraceyMessageData data) throws TraceyIOError {
+        return sender.send(payload, destination, data);
     }
 
     /**

@@ -1,11 +1,14 @@
 package net.praqma.tracey.broker.rabbitmq;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.praqma.tracey.broker.TraceyMessageData;
 import org.json.*;
 
 /**
@@ -21,9 +24,13 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
     private static final Logger LOG = Logger.getLogger(TraceyEiffelMessageDispatcher.class.getName());
 
     @Override
-    public void dispatch(Channel c, String destination, byte[] payload) throws IOException, TimeoutException {
+    public void dispatch(Channel c, String destination, TraceyMessageData data, byte[] payload) throws IOException, TimeoutException {
         c.exchangeDeclare(destination, TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
-        c.basicPublish(destination, createRoutingKey(payload), null, payload);
+        c.basicPublish(destination, createRoutingKey(payload), new AMQP.BasicProperties.Builder()
+                .headers(data.getHeaders())
+                .deliveryMode(data.getDeliveryMode())
+                .build(),
+                payload);
         c.close();
     }
 

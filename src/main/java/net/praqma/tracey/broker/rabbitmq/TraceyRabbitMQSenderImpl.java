@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.praqma.tracey.broker.TraceyIOError;
+import net.praqma.tracey.broker.TraceyMessageData;
 import net.praqma.tracey.broker.TraceySender;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
 
@@ -61,13 +62,13 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     }
 
     @Override
-    public String send(String payload, String destination) throws TraceyIOError {
+    public String send(String payload, String destination, TraceyMessageData data) throws TraceyIOError {
         try {
             configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();
             Connection co = factory.newConnection();
             Channel c = co.createChannel();
-            d.dispatch(c, destination, payload.getBytes());
+            d.dispatch(c, destination, data, payload.getBytes());
             co.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);
