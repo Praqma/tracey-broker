@@ -23,26 +23,6 @@ import org.mockito.Mockito;
 
 public class DispatcherTest {
 
-    @Test
-    public void createDispatcher() throws Exception {
-        TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
-        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String key = dispatcher.createRoutingKey(data);
-        assertEquals("tracey.event.eiffel.eiffelsourcechangecreatedevent", key);
-    }
-
-    @Test
-    public void testCreateDefaultErrorRouting() throws Exception {
-        TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
-        URI url = DispatcherTest.class.getResource("sourcechangeevent_broken.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String key = dispatcher.createRoutingKey(data);
-        assertEquals("tracey.event.default", key);
-    }
-
     /**
      * Test dispatcher sends headers
      * @throws Exception
@@ -72,16 +52,5 @@ public class DispatcherTest {
         assertEquals(argumentCaptor.getValue().getHeaders().get("Int"), 23);
         assertEquals(argumentCaptor.getValue().getHeaders().get("Boolean"), true);
         assertTrue(argumentCaptor.getValue().getHeaders().get("List").toString().contains("[one, two, three]"));
-    }
-
-    @Test
-    public void testGitParsing() throws Exception {
-        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String dataString = new String(data, "utf-8");
-        assertTrue(TraceyEiffelMessageValidator.isA("EiffelSourceChangeCreatedEvent", dataString));
-        assertTrue(dataString.contains("gitIdentifier"));
-        assertNotNull(TraceyEiffelMessageValidator.getGitIdentifier(dataString));
     }
 }

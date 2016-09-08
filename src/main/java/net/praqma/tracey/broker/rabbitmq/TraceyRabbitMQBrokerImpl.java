@@ -1,7 +1,10 @@
 package net.praqma.tracey.broker.rabbitmq;
 
 import net.praqma.tracey.broker.TraceyBroker;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <h2>Tracey broker for RabbitMQ</h2>
@@ -16,94 +19,45 @@ import java.io.File;
 public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceiverImpl, TraceyRabbitMQSenderImpl> {
 
     /**
-     * An {@link  ExchangeType} representing the exchange types available for RabbitMQ.
+     * Default constructor. Creates receiver and sender using defaults.
      */
-    public enum ExchangeType {
-        FANOUT("fanout"),
-        TOPIC("topic"),
-        DIRECT("direct");
-
-
-        private String type;
-
-        ExchangeType(String type) {
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return type;
-        }
+    public TraceyRabbitMQBrokerImpl() {
+        this.receiver = new TraceyRabbitMQReceiverImpl();
+        this.sender = new TraceyRabbitMQSenderImpl();
     }
 
+    /**
+     * A full constructor
+     * @param receiver RabbitMQ receiver object
+     * @param sender   RabbitMQ sender object
+     */
     public TraceyRabbitMQBrokerImpl(TraceyRabbitMQReceiverImpl receiver, TraceyRabbitMQSenderImpl sender) {
         super(receiver, sender);
     }
 
-    public void configure() {
-        receiver.configure();
-        sender.configure();
-    }
-
-
     /**
-     * Default constructor. Makes a very basic receiver and sender.
+     * A full constructor
+     * @param connection RabbitMQ connection object
+     * @param filters    List of filters for receiver
      */
-    public TraceyRabbitMQBrokerImpl() {
-        this.receiver = new TraceyRabbitMQReceiverBuilder()
-                .setExchange("tracey")
-                .setHost("localhost")
-                .setType(ExchangeType.FANOUT).build();
-        this.sender = new TraceyRabbitMQSenderImpl();
+    public TraceyRabbitMQBrokerImpl(final RabbitMQConnection connection, final List<TraceyFilter> filters) {
+        this.receiver = new TraceyRabbitMQReceiverImpl(connection, filters);
+        this.sender = new TraceyRabbitMQSenderImpl(connection);
     }
 
     /**
-     *
-     * @param host  the host you wish to connect to for sending and receiving messages.
+     * Create all objects using parameters from config file. Filters won't be set for receiver. Set them afterwards
+     * @param configFile File object with config file
      */
-    public TraceyRabbitMQBrokerImpl(String host) {
-        this.receiver = new TraceyRabbitMQReceiverBuilder()
-                .setExchange("tracey")
-                .setHost(host)
-                .setType(ExchangeType.FANOUT).build();
-        this.sender = new TraceyRabbitMQSenderImpl();
-    }
-
     public TraceyRabbitMQBrokerImpl(File configFile) {
-        TraceyRabbitMQReceiverBuilder builder = TraceyRabbitMQReceiverBuilder
-                .buildFromConfigFile(configFile);
-        this.receiver = builder.build();
-        this.sender = builder.buildSender();
+        final RabbitMQConnection connection = RabbitMQConnection.buildFromConfigFile(configFile);
+        this.receiver = new TraceyRabbitMQReceiverImpl(connection, new ArrayList<TraceyFilter>());
+        this.sender = new TraceyRabbitMQSenderImpl(connection);
     }
 
-    /**
-     * Full constructor
-     *
-     * @param host
-     * @param password
-     * @param user
-     * @param type
-     * @param exchange
-     */
-    public TraceyRabbitMQBrokerImpl(String host, String password, String user, ExchangeType type, String exchange) {
-        this.receiver = new TraceyRabbitMQReceiverBuilder()
-                .setHost(host)
-                .setUsername(user)
-                .setPassword(password)
-                .setExchange(exchange)
-                .setType(type).build();
+    public TraceyRabbitMQSenderImpl getSender() { return sender; }
 
-        this.sender = new TraceyRabbitMQSenderImpl();
-        sender.setHost(host);
-        sender.setPw(password);
-        sender.setType(type);
-        sender.setUsername(user);
+    public TraceyRabbitMQReceiverImpl getReceiver() {
+        return receiver;
     }
-
-    public TraceyRabbitMQBrokerImpl(String host, String password, String user, ExchangeType type, String exchange, int port) {
-        this(host,password,user,type,exchange);
-        sender.setPort(port);
-        receiver.setPort(port);
-    }
-
 }

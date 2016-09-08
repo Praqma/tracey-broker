@@ -24,7 +24,7 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher<Ra
 
     @Override
     public void dispatch(Channel c, RabbitMQRoutingInfo data, byte[] payload) throws IOException, TimeoutException {
-        c.exchangeDeclare(data.getExchangeName(), TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
+        c.exchangeDeclare(data.getExchangeName(), data.getExchangeType());
         c.basicPublish(data.getExchangeName(), createRoutingKey(payload), new AMQP.BasicProperties.Builder()
                 .headers(data.getHeaders())
                 .deliveryMode(data.getDeliveryMode())
