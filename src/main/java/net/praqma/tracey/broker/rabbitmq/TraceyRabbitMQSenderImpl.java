@@ -63,13 +63,13 @@ public class TraceyRabbitMQSenderImpl implements TraceySender<RoutingInfoRabbitM
     }
 
     @Override
-    public String send(String payload, String destination, RoutingInfoRabbitMQ data) throws TraceyIOError {
+    public String send(String payload, RoutingInfoRabbitMQ data) throws TraceyIOError {
         try {
             configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();
             Connection co = factory.newConnection();
             Channel c = co.createChannel();
-            d.dispatch(c, destination, data, payload.getBytes());
+            d.dispatch(c, data, payload.getBytes());
             co.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);

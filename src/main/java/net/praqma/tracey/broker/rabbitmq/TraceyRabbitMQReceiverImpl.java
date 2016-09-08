@@ -26,7 +26,7 @@ import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
  * Basic implementation for RabbitMQ. Prints received messages to console.
  * </p>
  */
-public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
+public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RoutingInfoRabbitMQ> {
 
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQReceiverImpl.class.getName());
     private ConnectionFactory factory = new ConnectionFactory();
@@ -93,11 +93,11 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver {
     }
 
     @Override
-    public String receive(String source) throws TraceyIOError {
+    public String receive(RoutingInfoRabbitMQ data) throws TraceyIOError {
         try {
             configure();
             channel = createChannel();
-            String configuredExchange = source != null ? source : getExchange();
+            String configuredExchange = data.getDestination() != null ? data.getDestination() : getExchange();
 
             Set<String> routingKeys = new HashSet<>();
 

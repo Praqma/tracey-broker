@@ -62,10 +62,10 @@ public class DispatcherTest {
         headers.put("Boolean", true);
         headers.put("List", Arrays.asList("one", "two", "three"));
         // Fill by some data:
-        RoutingInfoRabbitMQ data = new RoutingInfoRabbitMQ(headers, 1, "routingKey");
+        RoutingInfoRabbitMQ data = new RoutingInfoRabbitMQ(headers, "destination", 1, "routingKey");
         TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
         Channel c = mock(Channel.class);
-        dispatcher.dispatch(c, "destination", data, payload);
+        dispatcher.dispatch(c, data, payload);
         //Check if values pass correctly
         ArgumentCaptor<AMQP.BasicProperties> argumentCaptor = ArgumentCaptor.forClass(AMQP.BasicProperties.class);
         //Mockito.verify(c).basicPublish(eq("distenation"), eq(dispatcher.createRoutingKey(payload)), argumentCaptor.capture(),eq(payload));

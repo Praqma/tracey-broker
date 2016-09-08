@@ -24,9 +24,9 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher<Ro
     private static final Logger LOG = Logger.getLogger(TraceyEiffelMessageDispatcher.class.getName());
 
     @Override
-    public void dispatch(Channel c, String destination, RoutingInfoRabbitMQ data, byte[] payload) throws IOException, TimeoutException {
-        c.exchangeDeclare(destination, TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
-        c.basicPublish(destination, createRoutingKey(payload), new AMQP.BasicProperties.Builder()
+    public void dispatch(Channel c, RoutingInfoRabbitMQ data, byte[] payload) throws IOException, TimeoutException {
+        c.exchangeDeclare(data.getDestination(), TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
+        c.basicPublish(data.getDestination(), createRoutingKey(payload), new AMQP.BasicProperties.Builder()
                 .headers(data.getHeaders())
                 .deliveryMode(data.getDeliveryMode())
                 .build(),

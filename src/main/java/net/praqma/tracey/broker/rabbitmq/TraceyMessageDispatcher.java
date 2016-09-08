@@ -7,5 +7,5 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public interface TraceyMessageDispatcher <T extends RoutingInfo>{
-    public void dispatch(Channel channel, String destination, T data, byte[] payload) throws IOException, TimeoutException;
+    public void dispatch(Channel channel, T data, byte[] payload) throws IOException, TimeoutException;
 }

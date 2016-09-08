@@ -15,8 +15,9 @@ public class RoutingInfoRabbitMQ implements RoutingInfo {
     private String destination; // Exchange name
     private String exchangeType;
 
-    public RoutingInfoRabbitMQ(Map<String, Object> headers, int deliveryMode, String routingKey) {
+    public RoutingInfoRabbitMQ(Map<String, Object> headers, String destination, int deliveryMode, String routingKey) {
         this.headers = headers;
+        this.destination = destination;
         this.deliveryMode = deliveryMode;
         this.routingKey = routingKey;
     }
