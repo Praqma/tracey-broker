@@ -19,7 +19,7 @@ import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
  * Basic implementation. Very simple.
  * </p>
  */
-public class TraceyRabbitMQSenderImpl implements TraceySender<RoutingInfoRabbitMQ> {
+public class TraceyRabbitMQSenderImpl implements TraceySender<RabbitMQRoutingInfo> {
 
     public ExchangeType getType() {
         return type;
@@ -63,7 +63,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender<RoutingInfoRabbitM
     }
 
     @Override
-    public String send(String payload, RoutingInfoRabbitMQ data) throws TraceyIOError {
+    public String send(String payload, RabbitMQRoutingInfo data) throws TraceyIOError {
         try {
             configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();

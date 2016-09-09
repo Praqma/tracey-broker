@@ -18,14 +18,14 @@ import org.json.*;
  *
  * @author Mads
  */
-public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher<RoutingInfoRabbitMQ> {
+public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher<RabbitMQRoutingInfo> {
 
     private static final Logger LOG = Logger.getLogger(TraceyEiffelMessageDispatcher.class.getName());
 
     @Override
-    public void dispatch(Channel c, RoutingInfoRabbitMQ data, byte[] payload) throws IOException, TimeoutException {
-        c.exchangeDeclare(data.getDestination(), TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
-        c.basicPublish(data.getDestination(), createRoutingKey(payload), new AMQP.BasicProperties.Builder()
+    public void dispatch(Channel c, RabbitMQRoutingInfo data, byte[] payload) throws IOException, TimeoutException {
+        c.exchangeDeclare(data.getExchangeName(), TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
+        c.basicPublish(data.getExchangeName(), createRoutingKey(payload), new AMQP.BasicProperties.Builder()
                 .headers(data.getHeaders())
                 .deliveryMode(data.getDeliveryMode())
                 .build(),

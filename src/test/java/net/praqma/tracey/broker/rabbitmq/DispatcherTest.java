@@ -53,14 +53,14 @@ public class DispatcherTest {
         URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
         Path p = Paths.get(url);
         byte[] payload = Files.readAllBytes(p);
-        // Construct RoutingInfoRabbitMQ and put value to headers
+        // Construct RabbitMQRoutingInfo and put value to headers
         Map<String, Object> headers = new HashMap<String, Object>();
         headers.put("key1", "value1");//any or all
         headers.put("Int", 23);
         headers.put("Boolean", true);
         headers.put("List", Arrays.asList("one", "two", "three"));
         // Fill by some data:
-        RoutingInfoRabbitMQ data = new RoutingInfoRabbitMQ(headers, "destination", 1, "routingKey");
+        RabbitMQRoutingInfo data = new RabbitMQRoutingInfo(headers, "destination", 1, "routingKey");
         TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
         Channel c = mock(Channel.class);
         dispatcher.dispatch(c, data, payload);

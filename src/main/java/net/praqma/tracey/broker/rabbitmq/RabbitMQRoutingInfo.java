@@ -8,25 +8,25 @@ import java.util.Map;
  * Interface for routing info
  * Created by alexandrasedova on 07/09/16.
  */
-public class RoutingInfoRabbitMQ implements RoutingInfo {
+public class RabbitMQRoutingInfo implements RoutingInfo {
     private Map<String, Object> headers;
     private int deliveryMode;
     private String routingKey;
-    private String destination; // Exchange name
+    private String exchangeName;
     private String exchangeType;
 
-    public RoutingInfoRabbitMQ(Map<String, Object> headers, String destination, int deliveryMode, String routingKey) {
+    public RabbitMQRoutingInfo(Map<String, Object> headers, String exchangeName, int deliveryMode, String routingKey) {
         this.headers = headers;
-        this.destination = destination;
+        this.exchangeName = exchangeName;
         this.deliveryMode = deliveryMode;
         this.routingKey = routingKey;
     }
 
-    public RoutingInfoRabbitMQ(Map<String, Object> headers, int deliveryMode, String routingKey, String destination, String exchangeType) {
+    public RabbitMQRoutingInfo(Map<String, Object> headers, int deliveryMode, String routingKey, String exchangeName, String exchangeType) {
         this.headers = headers;
         this.deliveryMode = deliveryMode;
         this.routingKey = routingKey;
-        this.destination = destination;
+        this.exchangeName = exchangeName;
         this.exchangeType = exchangeType;
     }
 
@@ -42,8 +42,8 @@ public class RoutingInfoRabbitMQ implements RoutingInfo {
         return routingKey;
     }
 
-    public String getDestination() {
-        return destination;
+    public String getExchangeName() {
+        return exchangeName;
     }
 
     public String getExchangeType() {
