@@ -1,11 +1,13 @@
 package net.praqma.tracey.broker.rabbitmq;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.json.*;
 
 /**
@@ -16,14 +18,18 @@ import org.json.*;
  *
  * @author Mads
  */
-public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
+public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher<RoutingInfoRabbitMQ> {
 
     private static final Logger LOG = Logger.getLogger(TraceyEiffelMessageDispatcher.class.getName());
 
     @Override
-    public void dispatch(Channel c, String destination, byte[] payload) throws IOException, TimeoutException {
-        c.exchangeDeclare(destination, TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
-        c.basicPublish(destination, createRoutingKey(payload), null, payload);
+    public void dispatch(Channel c, RoutingInfoRabbitMQ data, byte[] payload) throws IOException, TimeoutException {
+        c.exchangeDeclare(data.getDestination(), TraceyRabbitMQBrokerImpl.ExchangeType.TOPIC.toString());
+        c.basicPublish(data.getDestination(), createRoutingKey(payload), new AMQP.BasicProperties.Builder()
+                .headers(data.getHeaders())
+                .deliveryMode(data.getDeliveryMode())
+                .build(),
+                payload);
         c.close();
     }
 
@@ -36,7 +42,6 @@ public class TraceyEiffelMessageDispatcher implements TraceyMessageDispatcher {
         } catch (UnsupportedEncodingException | JSONException error) {
             LOG.log(Level.INFO, String.format("Non eiffel message received, using routing key %s", d));
         }
-
         return d;
     }
 }

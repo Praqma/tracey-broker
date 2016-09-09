@@ -12,10 +12,11 @@ The Broker class holds references to both sender and reciever, two seperate inte
 
 ```
 	package net.praqma.tracey.broker;
-
-	public interface TraceySender {
-		public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError;
+	
+	public interface TraceySender <T extends RoutingInfo>{
+    	public String send(String payload, T data) throws TraceyIOError;
 	}
+
 ```
 
 ### TraceyReciver.java
@@ -23,8 +24,8 @@ The Broker class holds references to both sender and reciever, two seperate inte
 ```
 	package net.praqma.tracey.broker;
 
-	public interface TraceyReceiver {
-		public String receive(String source);
+	public interface TraceyReceiver <T extends RoutingInfo> {
+ 	   public String receive(T data) throws TraceyIOError;
 	}
 ```
 
@@ -42,6 +43,9 @@ We've added a `TraceyMessageValidator` interface since we want to be able to dis
 
 The TraceyMessageValidator is attached to the broker, and by default will be called when `send(...)` and `receive(...)` is called in `TraceyBroker.java`
 
+We've added new empty interface `RoutingInfo` since we want to have a generic interface post to TraceySender if we will implement more message brokers. RoutingInfo interface for classes will contain the routing information, such as in the case of RabbitMQ the routing key, message header, delivery mode, etc.     
+
+
 ### TraceyBroker.java
 
 TracyBroker is an abstract class that contains an implementation of a sender and a receiver. That means for any given broker middleware, we can subclass and add specific implementations.
@@ -51,20 +55,13 @@ TracyBroker is an abstract class that contains an implementation of a sender and
 
 		protected T receiver;
 		protected S sender;
-		protected TraceyMessageValidator validator;
-
-		public String send(String payload, String destination) throws TraceyValidatorError, TraceyIOError {
-			if(validator != null) {
-				validator.validateSend(payload);
-			}
-			return sender.send(payload, destination);
+		
+		public String send(String payload, RoutingInfo data) throws TraceyValidatorError, TraceyIOError {
+			return sender.send(payload, data);
 		}
 
-		public String receive(String destination) throws TraceyValidatorError, TraceyIOError {
-			if(validator != null) {
-				validator.validateReceive(destination);
-			}
-			return receiver.receive(destination);
+		public String receive(RoutingInfo data) throws TraceyValidatorError, TraceyIOError {
+			return receiver.receive(data);
 		}
 
 		public TraceyBroker() { }
@@ -73,20 +70,6 @@ TracyBroker is an abstract class that contains an implementation of a sender and
 		public TraceyBroker(T receiver, S sender) {
 			this.sender = sender;
 			this.receiver = receiver;
-		}
-
-		/**
-		 * @return the validator
-		 */
-		public TraceyMessageValidator getValidator() {
-			return validator;
-		}
-
-		/**
-		 * @param validator the validator to set
-		 */
-		public void setValidator(TraceyMessageValidator validator) {
-			this.validator = validator;
 		}
 
 		/**
@@ -150,6 +133,56 @@ And then attaching it to the Broker:
 	p.receive(exchange);
 ```
 
+### RoutingInfoRabbitMQ
+
+The class contains message attributes such as routing key, header, exchange name, delivery mode, etc.
+
+```
+	public class RoutingInfoRabbitMQ implements RoutingInfo {
+	    private Map<String, Object> headers;
+	    private int deliveryMode;
+	    private String routingKey;
+	    private String destination; // Exchange name
+	    private String exchangeType;
+
+	    public RoutingInfoRabbitMQ(Map<String, Object> headers, String destination, int deliveryMode, String routingKey) {
+	        this.headers = headers;
+	        this.destination = destination;
+	        this.deliveryMode = deliveryMode;
+	        this.routingKey = routingKey;
+	    }
+
+	    public RoutingInfoRabbitMQ(Map<String, Object> headers, int deliveryMode, String routingKey, String destination, String exchangeType) {
+	        this.headers = headers;
+	        this.deliveryMode = deliveryMode;
+	        this.routingKey = routingKey;
+	        this.destination = destination;
+	        this.exchangeType = exchangeType;
+	    }
+
+	    public Map<String, Object> getHeaders() {
+	        return headers;
+	    }
+
+	    public int getDeliveryMode() {
+	        return deliveryMode;
+	    }
+
+	    public String getRoutingKey() {
+	        return routingKey;
+	    }
+
+	    public String getDestination() {
+	        return destination;
+	    }
+
+	    public String getExchangeType() {
+	        return exchangeType;
+	    }
+
+	}
+
+```  
 
 ### Building tracey-broker
 

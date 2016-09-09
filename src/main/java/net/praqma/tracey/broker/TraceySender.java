@@ -6,6 +6,6 @@ package net.praqma.tracey.broker;
  * The interface to implement for tracey to send messages
  * </p>
  */
-public interface TraceySender {
-    public String send(String payload, String destination) throws TraceyIOError;
+public interface TraceySender <T extends RoutingInfo>{
+    public String send(String payload, T data) throws TraceyIOError;
 }

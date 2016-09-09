@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.praqma.tracey.broker.TraceyIOError;
 import net.praqma.tracey.broker.TraceySender;
 import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
@@ -18,7 +19,7 @@ import net.praqma.tracey.broker.rabbitmq.TraceyRabbitMQBrokerImpl.ExchangeType;
  * Basic implementation. Very simple.
  * </p>
  */
-public class TraceyRabbitMQSenderImpl implements TraceySender {
+public class TraceyRabbitMQSenderImpl implements TraceySender<RoutingInfoRabbitMQ> {
 
     public ExchangeType getType() {
         return type;
@@ -62,13 +63,13 @@ public class TraceyRabbitMQSenderImpl implements TraceySender {
     }
 
     @Override
-    public String send(String payload, String destination) throws TraceyIOError {
+    public String send(String payload, RoutingInfoRabbitMQ data) throws TraceyIOError {
         try {
             configure();
             TraceyMessageDispatcher d = new TraceyEiffelMessageDispatcher();
             Connection co = factory.newConnection();
             Channel c = co.createChannel();
-            d.dispatch(c, destination, payload.getBytes(Charset.forName("UTF-8")));
+            d.dispatch(c, data, payload.getBytes(Charset.forName("UTF-8")));
             co.close();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);

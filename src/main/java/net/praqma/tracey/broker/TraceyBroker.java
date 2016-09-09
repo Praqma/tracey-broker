@@ -20,22 +20,21 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
     /**
      *
      * @param payload  the payload you want to send using the {@link TraceySender}
-     * @param destination  an abstract notation on where the payload goes
      * @return the sent payload
      * @throws TraceyIOError if the chosen middleware for message sending encounters a network error
      */
-    public String send(String payload, String destination) throws TraceyIOError {
-        return sender.send(payload, destination);
+    public String send(String payload, RoutingInfo data) throws TraceyIOError {
+        return sender.send(payload, data);
     }
 
     /**
      *
-     * @param destination  the abstract representation of what we want to receive (listen). Receive can be blocking.
+     * @param data  the abstract representation of routing info what we get from broker and want to receive (listen). Receive can be blocking.
      * @return the received message
      * @throws TraceyIOError if the chosen middleware for receiving messages encounters a network error.
      */
-    public String receive(String destination) throws TraceyIOError {
-        return receiver.receive(destination);
+    public String receive(RoutingInfo data) throws TraceyIOError {
+        return receiver.receive(data);
     }
 
     public TraceyBroker() { }
