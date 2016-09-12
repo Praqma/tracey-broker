@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.broker.rabbitmq;
 
 import java.io.File;
@@ -12,8 +7,8 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
+//import org.mockito.Mockito;
+//import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
