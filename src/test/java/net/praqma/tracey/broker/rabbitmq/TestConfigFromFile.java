@@ -25,18 +25,6 @@ public class TestConfigFromFile {
         ENV.put("RABBITMQ_PW", "rabbitpw");
     }
 
-    /**
-     * Example config file. Test for basic stuff. We'll fail gloriously if the file is not there
-     *
-     * broker {
-            rabbitmq {
-                host = 'some.host.name'
-                password = 's0m3p4ss'
-                exchange = 'tracey'
-            }
-        }
-     * @throws Exception
-     */
     @Test
     public void parseSenderConfigFile () throws Exception {
         URI path = TestConfigFromFile.class.getResource("broker.config").toURI();
@@ -73,7 +61,9 @@ public class TestConfigFromFile {
         assertEquals("fanout", info.getExchangeType());
         assertEquals(1, info.getDeliveryMode());
         assertEquals("", info.getRoutingKey());
-        // TODO: fix headers
+        assertEquals(2, info.getHeaders().size());
+        assertEquals("someValue", info.getHeaders().get("someKey"));
+        assertEquals(0, info.getHeaders().get("someKey1"));
     }
 
     @Test
@@ -95,6 +85,13 @@ public class TestConfigFromFile {
         assertEquals(RabbitMQDefaults.USERNAME, sender.getConnection().getUserName());
         assertEquals(RabbitMQDefaults.PASSWORD, sender.getConnection().getPassword());
         assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, sender.getConnection().isAutomaticRecoveryEnabled());
+
+        RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(f);
+        assertEquals(RabbitMQDefaults.EXCHANGE_NAME, info.getExchangeName());
+        assertEquals(RabbitMQDefaults.EXCHANGE_TYPE.toString(), info.getExchangeType());
+        assertEquals(RabbitMQDefaults.DELEIVERY_MODE, info.getDeliveryMode());
+        assertEquals(RabbitMQDefaults.ROUTING_KEY, info.getRoutingKey());
+        assertEquals(RabbitMQDefaults.HEADERS.size(), info.getHeaders().size());
     }
 
     // TODO: fix me

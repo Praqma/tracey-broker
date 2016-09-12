@@ -44,9 +44,19 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         final int deliveryMode = (int) m.getOrDefault("broker.rabbitmq.routingInfo.deliveryMode", RabbitMQDefaults.DELEIVERY_MODE);
         final String routingKey = (String) m.getOrDefault("broker.rabbitmq.routingInfo.routingKey", RabbitMQDefaults.ROUTING_KEY);
         final String exchangeName = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeName", RabbitMQDefaults.EXCHANGE_NAME);
-        final String exchangeType = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeType", RabbitMQDefaults.EXCHANGE_TYPE);
-        final Map<String, Object> headers = (Map<String, Object>) m.getOrDefault("broker.rabbitmq.routingInfo.headers", RabbitMQDefaults.HEADERS);
+        final String exchangeType = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeType", RabbitMQDefaults.EXCHANGE_TYPE.toString());
+        final Map<String, Object> headers = extractHeaders(m);
         return new RabbitMQRoutingInfo(headers, deliveryMode , routingKey, exchangeName, exchangeType);
+    }
+
+    private static Map<String, Object> extractHeaders(Map<String, Object> config) {
+        Map<String, Object> headers = new HashMap<>();
+        config.forEach((key,value)->{
+            if(key.contains("broker.rabbitmq.routingInfo.headers")){
+                headers.put(key.replace("broker.rabbitmq.routingInfo.headers.", ""), value);
+            }
+        });
+        return headers;
     }
 
     public void setHeaders(Map<String, Object> headers) {

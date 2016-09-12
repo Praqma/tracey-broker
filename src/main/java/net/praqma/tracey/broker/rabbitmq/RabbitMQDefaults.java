@@ -13,5 +13,5 @@ public class RabbitMQDefaults {
     final public static String EXCHANGE_NAME = "tracey";
     final public static int    DELEIVERY_MODE = 0;
     final public static String ROUTING_KEY = "";
-    final public static Map<String, String> HEADERS= Collections.EMPTY_MAP;
+    final public static Map<String, Object> HEADERS= Collections.EMPTY_MAP;
 }

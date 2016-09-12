@@ -79,7 +79,10 @@ broker {
         	exchangeType = 'fanout'
         	routingKey = ''
         	deliveryMode = 1
-        	headers = ["key": "value"]
+        	headers {
+        		someKey = 'someValue'
+        		someKey1 = 0
+        	}
         }
     }
 }
@@ -90,6 +93,7 @@ Then create broker
 ```
 final File configFile = new File("path to configuration file");
 final TraceyRabbitMQBrokerImpl broker = new TraceyRabbitMQBrokerImpl(configFile);
+final RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(configFile);
 ```
 
 Note that filters for receiving is not covered by the configuration file.
@@ -99,10 +103,16 @@ You will need to set them separately
 broker.getReceiver().setFilters(...)
 ```
 
-Then send or receive using RoutingInfo object
+And then send
 
 ```
-TBD
+broker.getSender().send("Hello!", info);
+```
+
+or receive
+
+```
+broker.getReceiver().receive(info);
 ```
 
 ### Using constructors
