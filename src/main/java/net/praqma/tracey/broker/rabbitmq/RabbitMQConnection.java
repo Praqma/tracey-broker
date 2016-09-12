@@ -106,4 +106,14 @@ public class RabbitMQConnection {
     public String getPassword() { return factory.getPassword(); }
 
     public Boolean isAutomaticRecoveryEnabled() { return factory.isAutomaticRecoveryEnabled(); }
+
+    public void setHost(final String host) { this.factory.setHost(host); }
+
+    public void setPort(final int port) { this.factory.setPort(port); }
+
+    public void setUserName(final String userName) { this.factory.setUsername(userName); }
+
+    public void setPassword(final String password) { this.factory.setPassword(password); }
+
+    public void setAutomaticRecovery(final Boolean automaticRecovery) { this.factory.setAutomaticRecoveryEnabled(automaticRecovery); }
 }
