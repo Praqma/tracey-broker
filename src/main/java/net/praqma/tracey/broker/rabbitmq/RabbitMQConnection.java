@@ -7,7 +7,6 @@ import net.praqma.tracey.core.TraceyDefaultParserImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
@@ -88,17 +87,12 @@ public class RabbitMQConnection {
     public static RabbitMQConnection buildFromConfigFile(File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();
-        final String host = (String) getValueOrDefault("broker.rabbitmq.connection.host", m, RabbitMQDefaults.HOST);
-        final int port = (int) getValueOrDefault("broker.rabbitmq.connection.port", m, RabbitMQDefaults.PORT);
-        final String userName = (String) getValueOrDefault("broker.rabbitmq.connection.userName", m, RabbitMQDefaults.USERNAME);
-        final String password = (String) getValueOrDefault("broker.rabbitmq.connection.password", m, RabbitMQDefaults.PASSWORD);
-        final boolean automaticRecovery = (Boolean) getValueOrDefault("broker.rabbitmq.connection.automaticRecovery", m, RabbitMQDefaults.AUTOMATIC_RECOVERY);
+        final String host = (String) m.getOrDefault("broker.rabbitmq.connection.host", RabbitMQDefaults.HOST);
+        final int port = (int) m.getOrDefault("broker.rabbitmq.connection.port", RabbitMQDefaults.PORT);
+        final String userName = (String) m.getOrDefault("broker.rabbitmq.connection.userName", RabbitMQDefaults.USERNAME);
+        final String password = (String) m.getOrDefault("broker.rabbitmq.connection.password", RabbitMQDefaults.PASSWORD);
+        final boolean automaticRecovery = (Boolean) m.getOrDefault("broker.rabbitmq.connection.automaticRecovery", RabbitMQDefaults.AUTOMATIC_RECOVERY);
         return new RabbitMQConnection(host , port, userName, password, automaticRecovery);
-    }
-
-    // TODO: move to tracey core TraceyDefaultParserImpl
-    private static Object getValueOrDefault(final String key, final Map<String, Object> map, final Object defaultValue) {
-        return Optional.ofNullable(map.get(key)).orElse(defaultValue);
     }
 
     public Channel getChannel() { return channel; }

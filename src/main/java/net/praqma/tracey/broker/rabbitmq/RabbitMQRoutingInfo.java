@@ -7,7 +7,6 @@ import net.praqma.tracey.core.TraceyDefaultParserImpl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class RabbitMQRoutingInfo implements RoutingInfo {
     private Map<String, Object> headers;
@@ -42,17 +41,12 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
     public static RabbitMQRoutingInfo buildFromConfigFile(File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();
-        final int deliveryMode = (int) getValueOrDefault("broker.rabbitmq.routingInfo.deliveryMode", m, RabbitMQDefaults.DELEIVERY_MODE);
-        final String routingKey = (String) getValueOrDefault("broker.rabbitmq.routingInfo.routingKey", m, RabbitMQDefaults.ROUTING_KEY);
-        final String exchangeName = (String) getValueOrDefault("broker.rabbitmq.routingInfo.exchangeName", m, RabbitMQDefaults.EXCHANGE_NAME);
-        final String exchangeType = (String) getValueOrDefault("broker.rabbitmq.routingInfo.exchangeType", m, RabbitMQDefaults.EXCHANGE_TYPE);
-        final Map<String, Object> headers = (Map<String, Object>) getValueOrDefault("broker.rabbitmq.routingInfo.headers", m, RabbitMQDefaults.HEADERS);
+        final int deliveryMode = (int) m.getOrDefault("broker.rabbitmq.routingInfo.deliveryMode", RabbitMQDefaults.DELEIVERY_MODE);
+        final String routingKey = (String) m.getOrDefault("broker.rabbitmq.routingInfo.routingKey", RabbitMQDefaults.ROUTING_KEY);
+        final String exchangeName = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeName", RabbitMQDefaults.EXCHANGE_NAME);
+        final String exchangeType = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeType", RabbitMQDefaults.EXCHANGE_TYPE);
+        final Map<String, Object> headers = (Map<String, Object>) m.getOrDefault("broker.rabbitmq.routingInfo.headers", RabbitMQDefaults.HEADERS);
         return new RabbitMQRoutingInfo(headers, deliveryMode , routingKey, exchangeName, exchangeType);
-    }
-
-    // TODO: move to tracey core TraceyDefaultParserImpl
-    private static Object getValueOrDefault(final String key, final Map<String, Object> map, final Object defaultValue) {
-        return Optional.ofNullable(map.get(key)).orElse(defaultValue);
     }
 
     public void setHeaders(Map<String, Object> headers) {
