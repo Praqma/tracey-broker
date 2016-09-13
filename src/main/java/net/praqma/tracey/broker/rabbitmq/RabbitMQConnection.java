@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 /**
- * Wrapper around RabbitMQ connection class
+ * Wrapper around RabbitMQ connection/connection factory class
  */
 public class RabbitMQConnection {
     private static final Logger LOG = Logger.getLogger(RabbitMQConnection.class.getName());
@@ -92,7 +92,24 @@ public class RabbitMQConnection {
         final String userName = (String) m.getOrDefault("broker.rabbitmq.connection.userName", RabbitMQDefaults.USERNAME);
         final String password = (String) m.getOrDefault("broker.rabbitmq.connection.password", RabbitMQDefaults.PASSWORD);
         final boolean automaticRecovery = (Boolean) m.getOrDefault("broker.rabbitmq.connection.automaticRecovery", RabbitMQDefaults.AUTOMATIC_RECOVERY);
-        return new RabbitMQConnection(host , port, userName, password, automaticRecovery);
+        return new RabbitMQConnection(host , port, expand(userName), expand(password), automaticRecovery);
+    }
+
+    // TODO: move to tracey-core to avoid duplication here and in RabbitMQRoutingInfo
+    private static String expand(final String original) {
+        if(original == null)
+            return null;
+        String text = original;
+        Map<String, String> envMap = System.getenv();
+        for (Map.Entry<String, String> entry : envMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            text = text.replace("${" + key + "}", value);
+            text = text.replace("$"+key+"$", value);
+            text = text.replace("$"+key, value);
+            text = text.replace("%"+key+"%", value);
+        }
+        return text;
     }
 
     public Channel getChannel() { return channel; }

@@ -7,12 +7,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
-//import org.mockito.Mockito;
-//import org.powermock.api.mockito.PowerMockito;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
-@PrepareForTest({System.class})
+@PrepareForTest({System.class, RabbitMQConnection.class})
 public class TestConfigFromFile {
 
     @Rule
@@ -94,8 +94,7 @@ public class TestConfigFromFile {
         assertEquals(RabbitMQDefaults.HEADERS.size(), info.getHeaders().size());
     }
 
-    // TODO: fix me
-    /*@Test
+    @Test
     public void parseVariableExpansion() throws Exception {
         PowerMockito.mockStatic(System.class);
         Mockito.when(System.getenv()).thenReturn(ENV);
@@ -105,33 +104,18 @@ public class TestConfigFromFile {
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
-        assertEquals("localhost", receiver.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.HOST, receiver.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, receiver.getConnection().getPort());
         assertEquals("rabbitpw", receiver.getConnection().getPassword());
-        assertEquals("guest", receiver.getConnection().getUserName());
+        assertEquals("rabbituser", receiver.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, receiver.getConnection().isAutomaticRecoveryEnabled());
 
-        //Factory defaults
-        assertEquals("guest", impl.getReceiver().getConnection().getUserName());
-        assertEquals("rabbitpw", impl.getReceiver().getConnection().getPassword());
-        assertEquals("guest", impl.getSender().getConnection().getUserName());
-        assertEquals("rabbitpw", impl.getSender().getConnection().getPassword());
-    }*/
+        TraceyRabbitMQSenderImpl sender = impl.getSender();
+        assertEquals(RabbitMQDefaults.HOST, sender.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, sender.getConnection().getPort());
+        assertEquals("rabbitpw", sender.getConnection().getPassword());
+        assertEquals("rabbituser", sender.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, sender.getConnection().isAutomaticRecoveryEnabled());
 
-    // TODO: Fix me
-    /*@Test
-    public void testVariableExpansion() throws Exception {
-
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getenv()).thenReturn(ENV);
-
-        String windowsEnvVar = "%RABBITMQ_PW%";
-
-        String unixStyled = "$RABBITMQ_PW";
-        String unixStyled2 = "${RABBITMQ_PW}";
-
-        String expanded = TraceyRabbitMQReceiverBuilder.expand(windowsEnvVar);
-        assertEquals("rabbitpw", expanded);
-        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled));
-        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled2));
-
-    }*/
+    }
 }

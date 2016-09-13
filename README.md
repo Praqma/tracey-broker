@@ -96,7 +96,7 @@ final TraceyRabbitMQBrokerImpl broker = new TraceyRabbitMQBrokerImpl(configFile)
 final RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(configFile);
 ```
 
-Note that filters for receiving is not covered by the configuration file.
+Note that filters for receiver is not covered by the configuration file.
 You will need to set them separately
 
 ```
@@ -113,6 +113,39 @@ or receive
 
 ```
 broker.getReceiver().receive(info);
+```
+
+Please note that you can use environment variable names for user name and password to avoid storing them
+in plain text. Use the following format - %SOMETEXT%, ${SOMETEXT}, $SOMETEXT, $SOMETEXT$. See example below
+
+```
+broker {
+    rabbitmq {
+    	connection {
+        	host = 'some.host.name'
+        	port = 4444
+        	userName = '${USERNAME}'
+        	password = '${PASSWORD}'
+        	automaticRecovery = true
+        }
+    }
+}
+```
+
+Also, you don't have to specify all fields in the configuration file - if some piece is not provided then
+default value will be used. Check RabbitMQDefaults to see them.
+See example below
+
+```
+broker {
+    rabbitmq {
+    	connection {
+        	host = 'my.host'
+        	userName = '${USERNAME}'
+        	password = '${PASSWORD}'
+        }
+    }
+}
 ```
 
 ### Using constructors
