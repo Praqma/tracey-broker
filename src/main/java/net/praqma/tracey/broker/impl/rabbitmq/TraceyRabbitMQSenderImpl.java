@@ -40,7 +40,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
     public String send(final String payload, final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
             connection.createChannel();
-            connection.declareExchange(info.getExchangeName(), RabbitMQExchangeType.valueOf(info.getExchangeType()), true, true);
+            connection.declareExchange(info.getExchangeName(), info.getExchangeType(), true, true);
             final AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();
             builder.deliveryMode(info.getDeliveryMode());
             builder.headers(info.getHeaders());
