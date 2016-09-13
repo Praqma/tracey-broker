@@ -31,7 +31,7 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
      * @param receiver RabbitMQ receiver object
      * @param sender   RabbitMQ sender object
      */
-    public TraceyRabbitMQBrokerImpl(TraceyRabbitMQReceiverImpl receiver, TraceyRabbitMQSenderImpl sender) {
+    public TraceyRabbitMQBrokerImpl(final TraceyRabbitMQReceiverImpl receiver, final TraceyRabbitMQSenderImpl sender) {
         super(receiver, sender);
     }
 
@@ -49,9 +49,9 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
      * Create all objects using parameters from config file. Filters won't be set for receiver. Set them afterwards
      * @param configFile File object with config file
      */
-    public TraceyRabbitMQBrokerImpl(File configFile) {
+    public TraceyRabbitMQBrokerImpl(final File configFile) {
         final RabbitMQConnection connection = RabbitMQConnection.buildFromConfigFile(configFile);
-        this.receiver = new TraceyRabbitMQReceiverImpl(connection, new ArrayList<TraceyFilter>());
+        this.receiver = new TraceyRabbitMQReceiverImpl(connection, new ArrayList<>());
         this.sender = new TraceyRabbitMQSenderImpl(connection);
     }
 

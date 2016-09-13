@@ -34,7 +34,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
      * @param exchangeName exchange name to connect to
      * @param exchangeType exchange type to create if given exchange name doesn't exist
      */
-    public RabbitMQRoutingInfo(Map<String, Object> headers, int deliveryMode, String routingKey, String exchangeName, String exchangeType) {
+    public RabbitMQRoutingInfo(final Map<String, Object> headers, final int deliveryMode, final String routingKey, final String exchangeName, final String exchangeType) {
         this.headers = headers;
         this.deliveryMode = deliveryMode;
         this.routingKey = routingKey;
@@ -48,7 +48,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
      * @param f File object that contains configuration file
      * @return  RabbitMQRoutingInfo object
      */
-    public static RabbitMQRoutingInfo buildFromConfigFile(File f) {
+    public static RabbitMQRoutingInfo buildFromConfigFile(final File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();
         final int deliveryMode = (int) m.getOrDefault("broker.rabbitmq.routingInfo.deliveryMode", RabbitMQDefaults.DELEIVERY_MODE);
@@ -66,7 +66,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
      * @param config flattened configuration file
      * @return  map with the headers to send
      */
-    private static Map<String, Object> extractHeaders(Map<String, Object> config) {
+    private static Map<String, Object> extractHeaders(final Map<String, Object> config) {
         Map<String, Object> headers = new HashMap<>();
         config.forEach((key,value)->{
             if(key.contains("broker.rabbitmq.routingInfo.headers")){

@@ -103,7 +103,7 @@ public class RabbitMQConnection {
      * @param f File object that contains configuration file
      * @return  RabbitMQConnection object
      */
-    public static RabbitMQConnection buildFromConfigFile(File f) {
+    public static RabbitMQConnection buildFromConfigFile(final File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();
         final String host = (String) m.getOrDefault("broker.rabbitmq.connection.host", RabbitMQDefaults.HOST);

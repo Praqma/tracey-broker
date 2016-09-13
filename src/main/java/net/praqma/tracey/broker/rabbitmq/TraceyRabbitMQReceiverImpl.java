@@ -51,7 +51,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
     }
 
     @Override
-    public String receive(RabbitMQRoutingInfo info) throws TraceyIOError {
+    public String receive(final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
             connection.createChannel();
             connection.declareExchange(info.getExchangeName(), RabbitMQExchangeType.valueOf(info.getExchangeType()), true, false);
@@ -120,7 +120,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
         }
     }
 
-    public void cancel(String consumerTag) throws IOException {
+    public void cancel(final String consumerTag) throws IOException {
         if(consumerTag != null && connection.getChannel() != null) {
             try {
                 connection.getChannel().basicCancel(consumerTag);
@@ -134,7 +134,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
         return handler;
     }
 
-    public void setHandler(TraceyRabbitMQMessageHandler handler) {
+    public void setHandler(final TraceyRabbitMQMessageHandler handler) {
         this.handler = handler;
     }
 
@@ -142,7 +142,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
         return filters;
     }
 
-    public void setFilters(List<TraceyFilter> filters) {
+    public void setFilters(final List<TraceyFilter> filters) {
         this.filters = filters;
     }
 

@@ -12,7 +12,7 @@ public enum RabbitMQExchangeType {
 
     private String type;
 
-    RabbitMQExchangeType(String type) {
+    RabbitMQExchangeType(final String type) {
         this.type = type;
     }
 

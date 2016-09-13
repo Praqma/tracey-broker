@@ -32,12 +32,12 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
      * A detailed constructor.
      * @param connection RabbitMQ connection object
      */
-    public TraceyRabbitMQSenderImpl(RabbitMQConnection connection) {
+    public TraceyRabbitMQSenderImpl(final RabbitMQConnection connection) {
         this.connection = connection;
     }
 
     @Override
-    public String send(String payload, RabbitMQRoutingInfo info) throws TraceyIOError {
+    public String send(final String payload, final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
             connection.createChannel();
             connection.declareExchange(info.getExchangeName(), RabbitMQExchangeType.valueOf(info.getExchangeType()), true, true);
