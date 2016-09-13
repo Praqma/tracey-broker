@@ -80,7 +80,7 @@ public class RabbitMQConnection {
      *
      * @throws IOException when connection error occurs
      */
-    public void declareExchange(final String exchangeName, final RabbitMQExchangeType exchangeType, final boolean durable, final boolean autoDelete) throws IOException {
+    public void declareExchange(final String exchangeName, final String exchangeType, final boolean durable, final boolean autoDelete) throws IOException, TimeoutException {
         try {
             LOG.fine("Check that exchange " + exchangeName + " exists");
             channel.exchangeDeclarePassive(exchangeName);
@@ -88,7 +88,7 @@ public class RabbitMQConnection {
             // the server will raise a 404 channel exception if the named exchange does not exist so we create it
             LOG.fine("Exchange " + exchangeName + " does not exist." +
                     "Create exchange: " + exchangeName +
-                    " type: " + exchangeType.toString() +
+                    " type: " + exchangeType +
                     " durable: " + durable +
                     " autoDelete: " + autoDelete);
             channel.exchangeDeclare(exchangeName, exchangeType.toString(), durable, autoDelete, null);

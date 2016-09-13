@@ -21,7 +21,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
     public RabbitMQRoutingInfo() {
         this.headers = new HashMap<>();
         this.exchangeName = RabbitMQDefaults.EXCHANGE_NAME;
-        this.exchangeType = RabbitMQDefaults.EXCHANGE_TYPE.toString();
+        this.exchangeType = RabbitMQDefaults.EXCHANGE_TYPE;
         this.deliveryMode = RabbitMQDefaults.DELEIVERY_MODE;
         this.routingKey = RabbitMQDefaults.ROUTING_KEY;
     }
@@ -54,7 +54,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         final int deliveryMode = (int) m.getOrDefault("broker.rabbitmq.routingInfo.deliveryMode", RabbitMQDefaults.DELEIVERY_MODE);
         final String routingKey = (String) m.getOrDefault("broker.rabbitmq.routingInfo.routingKey", RabbitMQDefaults.ROUTING_KEY);
         final String exchangeName = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeName", RabbitMQDefaults.EXCHANGE_NAME);
-        final String exchangeType = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeType", RabbitMQDefaults.EXCHANGE_TYPE.toString());
+        final String exchangeType = (String) m.getOrDefault("broker.rabbitmq.routingInfo.exchangeType", RabbitMQDefaults.EXCHANGE_TYPE);
         final Map<String, Object> headers = extractHeaders(m);
         return new RabbitMQRoutingInfo(headers, deliveryMode , routingKey, exchangeName, exchangeType);
     }

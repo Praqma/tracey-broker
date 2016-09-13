@@ -88,7 +88,7 @@ public class TestConfigFromFile {
 
         RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(f);
         assertEquals(RabbitMQDefaults.EXCHANGE_NAME, info.getExchangeName());
-        assertEquals(RabbitMQDefaults.EXCHANGE_TYPE.toString(), info.getExchangeType());
+        assertEquals(RabbitMQDefaults.EXCHANGE_TYPE, info.getExchangeType());
         assertEquals(RabbitMQDefaults.DELEIVERY_MODE, info.getDeliveryMode());
         assertEquals(RabbitMQDefaults.ROUTING_KEY, info.getRoutingKey());
         assertEquals(RabbitMQDefaults.HEADERS.size(), info.getHeaders().size());
