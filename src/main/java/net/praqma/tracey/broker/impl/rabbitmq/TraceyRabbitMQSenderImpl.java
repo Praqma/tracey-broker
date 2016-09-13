@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
 import net.praqma.tracey.broker.api.TraceyIOError;
 import net.praqma.tracey.broker.api.TraceySender;
 
@@ -39,12 +40,13 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
     @Override
     public String send(final String payload, final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
-            connection.createChannel();
-            connection.getChannel().exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
+            Channel channel = connection.createChannel();
+            LOG.fine(String.format("Declare exchange: %s, type: %s, durable: true", info.getExchangeName(), info.getExchangeType()));
+            channel.exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
             final AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();
             builder.deliveryMode(info.getDeliveryMode());
             builder.headers(info.getHeaders());
-            connection.getChannel().basicPublish(info.getExchangeName(), info.getRoutingKey(), builder.build(), payload.getBytes(Charset.forName("UTF-8")));
+            channel.basicPublish(info.getExchangeName(), info.getRoutingKey(), builder.build(), payload.getBytes(Charset.forName("UTF-8")));
             connection.closeChannel();
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, "IOException", ex);
