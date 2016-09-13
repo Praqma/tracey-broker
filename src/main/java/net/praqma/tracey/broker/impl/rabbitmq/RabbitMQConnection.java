@@ -86,12 +86,13 @@ public class RabbitMQConnection {
             channel.exchangeDeclarePassive(exchangeName);
         } catch (IOException e) {
             // the server will raise a 404 channel exception if the named exchange does not exist so we create it
+            // Moreover if exchange doesn't exists channel will be closed so we need to re-open it
             LOG.fine("Exchange " + exchangeName + " does not exist." +
                     "Create exchange: " + exchangeName +
                     " type: " + exchangeType +
                     " durable: " + durable +
                     " autoDelete: " + autoDelete);
-            channel.exchangeDeclare(exchangeName, exchangeType.toString(), durable, autoDelete, null);
+            createChannel().exchangeDeclare(exchangeName, exchangeType, durable, autoDelete, null);
         }
     }
 
