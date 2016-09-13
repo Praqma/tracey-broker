@@ -39,7 +39,7 @@ public class DispatcherTest {
         headers.put("Boolean", true);
         headers.put("List", Arrays.asList("one", "two", "three"));
         // Fill by some data:
-        RabbitMQRoutingInfo data = new RabbitMQRoutingInfo(headers, "destination", 1, "routingKey");
+        RabbitMQRoutingInfo data = new RabbitMQRoutingInfo(headers, 1, "routingKey", RabbitMQDefaults.EXCHANGE_NAME, RabbitMQDefaults.EXCHANGE_TYPE.toString());
         TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
         Channel c = mock(Channel.class);
         dispatcher.dispatch(c, data, payload);

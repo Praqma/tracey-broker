@@ -23,13 +23,6 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         this.routingKey = RabbitMQDefaults.ROUTING_KEY;
     }
 
-    public RabbitMQRoutingInfo(Map<String, Object> headers, String exchangeName, int deliveryMode, String routingKey) {
-        this.headers = headers;
-        this.exchangeName = exchangeName;
-        this.deliveryMode = deliveryMode;
-        this.routingKey = routingKey;
-    }
-
     public RabbitMQRoutingInfo(Map<String, Object> headers, int deliveryMode, String routingKey, String exchangeName, String exchangeType) {
         this.headers = headers;
         this.deliveryMode = deliveryMode;
