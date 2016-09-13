@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 /**
  * An {@link  RabbitMQExchangeType} representing the exchange types available for RabbitMQ.

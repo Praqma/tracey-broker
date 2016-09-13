@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import java.util.Collections;
 import java.util.Map;

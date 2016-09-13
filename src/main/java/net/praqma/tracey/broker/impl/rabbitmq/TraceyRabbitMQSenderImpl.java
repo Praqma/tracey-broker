@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -7,8 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.rabbitmq.client.AMQP;
-import net.praqma.tracey.broker.TraceyIOError;
-import net.praqma.tracey.broker.TraceySender;
+import net.praqma.tracey.broker.api.TraceyIOError;
+import net.praqma.tracey.broker.api.TraceySender;
 
 /**
  * <h2>Tracey RabbitMQ sender</h2>

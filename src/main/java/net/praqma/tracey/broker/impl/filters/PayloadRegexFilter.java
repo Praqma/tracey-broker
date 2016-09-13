@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.filters;
+
+import net.praqma.tracey.broker.api.TraceyFilter;
 
 import java.util.Collections;
 import java.util.List;
