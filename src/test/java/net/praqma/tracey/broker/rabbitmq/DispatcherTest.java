@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -22,26 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 public class DispatcherTest {
-
-    @Test
-    public void createDispatcher() throws Exception {
-        TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
-        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String key = dispatcher.createRoutingKey(data);
-        assertEquals("tracey.event.eiffel.eiffelsourcechangecreatedevent", key);
-    }
-
-    @Test
-    public void testCreateDefaultErrorRouting() throws Exception {
-        TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
-        URI url = DispatcherTest.class.getResource("sourcechangeevent_broken.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String key = dispatcher.createRoutingKey(data);
-        assertEquals("tracey.event.default", key);
-    }
 
     /**
      * Test dispatcher sends headers
@@ -60,7 +39,7 @@ public class DispatcherTest {
         headers.put("Boolean", true);
         headers.put("List", Arrays.asList("one", "two", "three"));
         // Fill by some data:
-        RabbitMQRoutingInfo data = new RabbitMQRoutingInfo(headers, "destination", 1, "routingKey");
+        RabbitMQRoutingInfo data = new RabbitMQRoutingInfo(headers, 1, "routingKey", RabbitMQDefaults.EXCHANGE_NAME, RabbitMQDefaults.EXCHANGE_TYPE.toString());
         TraceyEiffelMessageDispatcher dispatcher = new TraceyEiffelMessageDispatcher();
         Channel c = mock(Channel.class);
         dispatcher.dispatch(c, data, payload);
@@ -72,16 +51,5 @@ public class DispatcherTest {
         assertEquals(argumentCaptor.getValue().getHeaders().get("Int"), 23);
         assertEquals(argumentCaptor.getValue().getHeaders().get("Boolean"), true);
         assertTrue(argumentCaptor.getValue().getHeaders().get("List").toString().contains("[one, two, three]"));
-    }
-
-    @Test
-    public void testGitParsing() throws Exception {
-        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
-        Path p = Paths.get(url);
-        byte[] data = Files.readAllBytes(p);
-        String dataString = new String(data, "utf-8");
-        assertTrue(TraceyEiffelMessageValidator.isA("EiffelSourceChangeCreatedEvent", dataString));
-        assertTrue(dataString.contains("gitIdentifier"));
-        assertNotNull(TraceyEiffelMessageValidator.getGitIdentifier(dataString));
     }
 }

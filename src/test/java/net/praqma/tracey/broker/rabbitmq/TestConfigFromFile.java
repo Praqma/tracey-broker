@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.broker.rabbitmq;
 
 import java.io.File;
@@ -17,7 +12,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
-@PrepareForTest({System.class, TraceyRabbitMQReceiverBuilder.class})
+@PrepareForTest({System.class, RabbitMQConnection.class})
 public class TestConfigFromFile {
 
     @Rule
@@ -30,41 +25,45 @@ public class TestConfigFromFile {
         ENV.put("RABBITMQ_PW", "rabbitpw");
     }
 
-    /**
-     * Example config file. Test for basic stuff. We'll fail gloriously if the file is not there
-     *
-     * broker {
-            rabbitmq {
-                host = 'some.host.name'
-                password = 's0m3p4ss'
-                exchange = 'tracey'
-            }
-        }
-     * @throws Exception
-     */
     @Test
-    public void parseFileConfigureReceiver () throws Exception {
+    public void parseSenderConfigFile () throws Exception {
         URI path = TestConfigFromFile.class.getResource("broker.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
-        impl.configure();
-        assertEquals("some.host.name", receiver.getHost());
-        assertEquals("s0m3p4ss", receiver.getPassword());
-        assertEquals("fanout", receiver.getType().toString());
-        assertEquals("stacie", receiver.getExchange());
-        assertEquals("myuser", receiver.getUsername());
+        assertEquals("some.host.name", receiver.getConnection().getHost());
+        assertEquals("myuser", receiver.getConnection().getUserName());
+        assertEquals("s0m3p4ss", receiver.getConnection().getPassword());
+        assertEquals(true, receiver.getConnection().isAutomaticRecoveryEnabled());
+    }
 
-        //Factory
-        assertEquals("myuser", impl.getReceiver().getFactory().getUsername());
-        assertEquals("s0m3p4ss", impl.getReceiver().getFactory().getPassword());
-        assertEquals(4444, impl.getReceiver().getFactory().getPort());
+    @Test
+    public void parseReceiverConfigFile () throws Exception {
+        URI path = TestConfigFromFile.class.getResource("broker.config").toURI();
+        File f = new File(path);
+        TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
 
-        assertEquals("myuser", impl.getSender().getFactory().getUsername());
-        assertEquals("s0m3p4ss", impl.getSender().getFactory().getPassword());
-        assertEquals(4444, impl.getSender().getFactory().getPort());
-        assertEquals(4444, impl.getReceiver().getFactory().getPort());
+        TraceyRabbitMQSenderImpl sender = impl.getSender();
+        assertEquals("some.host.name", sender.getConnection().getHost());
+        assertEquals("myuser", sender.getConnection().getUserName());
+        assertEquals("s0m3p4ss", sender.getConnection().getPassword());
+        assertEquals(true, sender.getConnection().isAutomaticRecoveryEnabled());
+    }
+
+    @Test
+    public void parseRoutingInfoConfigFile () throws Exception {
+        URI path = TestConfigFromFile.class.getResource("broker.config").toURI();
+        File f = new File(path);
+        RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(f);
+
+        assertEquals("stacie", info.getExchangeName());
+        assertEquals("fanout", info.getExchangeType());
+        assertEquals(1, info.getDeliveryMode());
+        assertEquals("", info.getRoutingKey());
+        assertEquals(2, info.getHeaders().size());
+        assertEquals("someValue", info.getHeaders().get("someKey"));
+        assertEquals(0, info.getHeaders().get("someKey1"));
     }
 
     @Test
@@ -72,20 +71,27 @@ public class TestConfigFromFile {
         URI path = TestConfigFromFile.class.getResource("broker_empty.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
-        impl.configure();
+
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
-        assertEquals("localhost", receiver.getHost());
-        assertEquals("guest", receiver.getPassword());
-        assertEquals("guest", receiver.getUsername());
-        assertEquals("fanout", receiver.getType().toString());
-        assertEquals("tracey", receiver.getExchange());
+        assertEquals(RabbitMQDefaults.HOST, receiver.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, receiver.getConnection().getPort());
+        assertEquals(RabbitMQDefaults.USERNAME, receiver.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.PASSWORD, receiver.getConnection().getPassword());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, receiver.getConnection().isAutomaticRecoveryEnabled());
 
-        //Factory defaults
-        assertEquals("guest", impl.getReceiver().getFactory().getUsername());
-        assertEquals("guest", impl.getReceiver().getFactory().getPassword());
+        TraceyRabbitMQSenderImpl sender = impl.getSender();
+        assertEquals(RabbitMQDefaults.HOST, sender.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, sender.getConnection().getPort());
+        assertEquals(RabbitMQDefaults.USERNAME, sender.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.PASSWORD, sender.getConnection().getPassword());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, sender.getConnection().isAutomaticRecoveryEnabled());
 
-        assertEquals("guest", impl.getSender().getFactory().getUsername());
-        assertEquals("guest", impl.getSender().getFactory().getPassword());
+        RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(f);
+        assertEquals(RabbitMQDefaults.EXCHANGE_NAME, info.getExchangeName());
+        assertEquals(RabbitMQDefaults.EXCHANGE_TYPE.toString(), info.getExchangeType());
+        assertEquals(RabbitMQDefaults.DELEIVERY_MODE, info.getDeliveryMode());
+        assertEquals(RabbitMQDefaults.ROUTING_KEY, info.getRoutingKey());
+        assertEquals(RabbitMQDefaults.HEADERS.size(), info.getHeaders().size());
     }
 
     @Test
@@ -96,37 +102,20 @@ public class TestConfigFromFile {
         URI path = TestConfigFromFile.class.getResource("broker_expansion.config").toURI();
         File f = new File(path);
         TraceyRabbitMQBrokerImpl impl = new TraceyRabbitMQBrokerImpl(f);
-        impl.configure();
 
         TraceyRabbitMQReceiverImpl receiver = impl.getReceiver();
-        assertEquals("localhost", receiver.getHost());
-        assertEquals("rabbitpw", receiver.getPassword());
-        assertEquals("guest", receiver.getUsername());
-        assertEquals("fanout", receiver.getType().toString());
-        assertEquals("tracey", receiver.getExchange());
+        assertEquals(RabbitMQDefaults.HOST, receiver.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, receiver.getConnection().getPort());
+        assertEquals("rabbitpw", receiver.getConnection().getPassword());
+        assertEquals("rabbituser", receiver.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, receiver.getConnection().isAutomaticRecoveryEnabled());
 
-        //Factory defaults
-        assertEquals("guest", impl.getReceiver().getFactory().getUsername());
-        assertEquals("rabbitpw", impl.getReceiver().getFactory().getPassword());
-        assertEquals("guest", impl.getSender().getFactory().getUsername());
-        assertEquals("rabbitpw", impl.getSender().getFactory().getPassword());
-    }
-
-    @Test
-    public void testVariableExpansion() throws Exception {
-
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getenv()).thenReturn(ENV);
-
-        String windowsEnvVar = "%RABBITMQ_PW%";
-
-        String unixStyled = "$RABBITMQ_PW";
-        String unixStyled2 = "${RABBITMQ_PW}";
-
-        String expanded = TraceyRabbitMQReceiverBuilder.expand(windowsEnvVar);
-        assertEquals("rabbitpw", expanded);
-        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled));
-        assertEquals("rabbitpw", TraceyRabbitMQReceiverBuilder.expand(unixStyled2));
+        TraceyRabbitMQSenderImpl sender = impl.getSender();
+        assertEquals(RabbitMQDefaults.HOST, sender.getConnection().getHost());
+        assertEquals(RabbitMQDefaults.PORT, sender.getConnection().getPort());
+        assertEquals("rabbitpw", sender.getConnection().getPassword());
+        assertEquals("rabbituser", sender.getConnection().getUserName());
+        assertEquals(RabbitMQDefaults.AUTOMATIC_RECOVERY, sender.getConnection().isAutomaticRecoveryEnabled());
 
     }
 }

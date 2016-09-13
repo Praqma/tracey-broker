@@ -1,9 +1,7 @@
-## tracey-broker
+# tracey-broker
 
-The broker module for Tracey. Requires [tracey-core](https://github.com/Praqma/tracey-core)
-
+The broker module for Tracey project.
 This module contains abstractions and concrete implementations for the type of middleware we wish to support for messaging.
-
 The Broker class holds references to both sender and reciever, two seperate interfaces
 
 ![Design Diagram](/docs/images/tracey2.png)
@@ -29,21 +27,15 @@ The Broker class holds references to both sender and reciever, two seperate inte
 	}
 ```
 
-We've added a `TraceyMessageValidator` interface since we want to be able to discard messages that do not fit a certain format. Use this if mesaages must conform to a specific protocol.
+### RoutingInfo.java
 
 ```
-	package net.praqma.tracey.broker;
+public interface RoutingInfo {
+}
+```
 
-	public interface TraceyMessageValidator {
-		public void validateSend(String message) throws TraceyValidatorError;
-		public void validateReceive(String message) throws TraceyValidatorError;
-	}
-
-``` 
-
-The TraceyMessageValidator is attached to the broker, and by default will be called when `send(...)` and `receive(...)` is called in `TraceyBroker.java`
-
-We've added new empty interface `RoutingInfo` since we want to have a generic interface post to TraceySender if we will implement more message brokers. RoutingInfo interface for classes will contain the routing information, such as in the case of RabbitMQ the routing key, message header, delivery mode, etc.     
+`RoutingInfo` is an empty interface to have a generic way of providing routing info about connection to send and receive methods.
+In the case of RabbitMQ RoutingInfo implementation contains the routing key, message header, delivery mode, exchange name and exchange type.
 
 
 ### TraceyBroker.java
@@ -63,141 +55,115 @@ TracyBroker is an abstract class that contains an implementation of a sender and
 		public String receive(RoutingInfo data) throws TraceyValidatorError, TraceyIOError {
 			return receiver.receive(data);
 		}
-
-		public TraceyBroker() { }
-
-		//Tracey with preconfigured sender and reciever
-		public TraceyBroker(T receiver, S sender) {
-			this.sender = sender;
-			this.receiver = receiver;
-		}
-
-		/**
-		 * @return the receiver
-		 */
-		public T getReceiver() {
-			return receiver;
-		}
-
-		/**
-		 * @param receiver the receiver to set
-		 */
-		public void setReceiver(T receiver) {
-			this.receiver = receiver;
-		}
-
-		/**
-		 * @return the sender
-		 */
-		public S getSender() {
-			return sender;
-		}
-
-		/**
-		 * @param sender the sender to set
-		 */
-		public void setSender(S sender) {
-			this.sender = sender;
-		}
+		....
 	}
 ```
 
-## RabbitMQ Implementation
+## RabbitMQ Implementation. Examples
 
-The first version of the broker contains one concrete imlpementation that uses `RabbitMQ` as the message broker.
+### Create from config file
 
-This implmentation is used in our experimental Jenkins plugin. When a broker is created, you get 1 randomly generated queue, that attaches itself to a shared exchange. If you want to 
-override how the receiver should handle messages, you can override the MessageHandler for the Receiver, like so: 
-
+First create configuration file. See example below
 ```
-	public class TraceyBuildStarter implements TraceyRabbitMQMessageHandler {
-
-		private AbstractProject<?,?> project;
-
-		public TraceyBuildStarter(final AbstractProject<?,?> project) {
-			this.project = project;
-		}
-
-		@Override
-		public void handleDelivery(String string, Envelope envlp, AMQP.BasicProperties bp, byte[] bytes) throws IOException {
-			project.scheduleBuild2(3, new Cause.UserIdCause(), new TraceyAction(new String(bytes, "UTF-8")));
-		}
-	}
-```
-
-And then attaching it to the Broker: 
-
-```
-	TraceyRabbitMQBrokerImpl p = new TraceyRabbitMQBrokerImpl();
-	p.getReceiver().setHandler(new TraceyBuildStarter(project));
-	p.receive(exchange);
+broker {
+    rabbitmq {
+    	connection {
+        	host = 'some.host.name'
+        	port = 4444
+        	userName = 'myuser'
+        	password = 's0m3p4ss'
+        	automaticRecovery = true
+        }
+        routingInfo {
+        	exchangeName = 'stacie'
+        	exchangeType = 'fanout'
+        	routingKey = ''
+        	deliveryMode = 1
+        	headers {
+        		someKey = 'someValue'
+        		someKey1 = 0
+        	}
+        }
+    }
+}
 ```
 
-### RoutingInfoRabbitMQ
-
-The class contains message attributes such as routing key, header, exchange name, delivery mode, etc.
+Then create broker
 
 ```
-	public class RoutingInfoRabbitMQ implements RoutingInfo {
-	    private Map<String, Object> headers;
-	    private int deliveryMode;
-	    private String routingKey;
-	    private String destination; // Exchange name
-	    private String exchangeType;
+final File configFile = new File("path to configuration file");
+final TraceyRabbitMQBrokerImpl broker = new TraceyRabbitMQBrokerImpl(configFile);
+final RabbitMQRoutingInfo info = RabbitMQRoutingInfo.buildFromConfigFile(configFile);
+```
 
-	    public RoutingInfoRabbitMQ(Map<String, Object> headers, String destination, int deliveryMode, String routingKey) {
-	        this.headers = headers;
-	        this.destination = destination;
-	        this.deliveryMode = deliveryMode;
-	        this.routingKey = routingKey;
-	    }
+Note that filters for receiver is not covered by the configuration file.
+You will need to set them separately
 
-	    public RoutingInfoRabbitMQ(Map<String, Object> headers, int deliveryMode, String routingKey, String destination, String exchangeType) {
-	        this.headers = headers;
-	        this.deliveryMode = deliveryMode;
-	        this.routingKey = routingKey;
-	        this.destination = destination;
-	        this.exchangeType = exchangeType;
-	    }
+```
+broker.getReceiver().setFilters(...)
+```
 
-	    public Map<String, Object> getHeaders() {
-	        return headers;
-	    }
+And then send
 
-	    public int getDeliveryMode() {
-	        return deliveryMode;
-	    }
+```
+broker.getSender().send("Hello!", info);
+```
 
-	    public String getRoutingKey() {
-	        return routingKey;
-	    }
+or receive
 
-	    public String getDestination() {
-	        return destination;
-	    }
+```
+broker.getReceiver().receive(info);
+```
 
-	    public String getExchangeType() {
-	        return exchangeType;
-	    }
+Please note that you can use environment variable names for user name and password to avoid storing them
+in plain text. Use the following format - %SOMETEXT%, ${SOMETEXT}, $SOMETEXT, $SOMETEXT$. See example below
 
-	}
+```
+broker {
+    rabbitmq {
+    	connection {
+        	host = 'some.host.name'
+        	port = 4444
+        	userName = '${USERNAME}'
+        	password = '${PASSWORD}'
+        	automaticRecovery = true
+        }
+    }
+}
+```
 
-```  
+Also, you don't have to specify all fields in the configuration file - if some piece is not provided then
+default value will be used. Check RabbitMQDefaults to see them.
+See example below
+
+```
+broker {
+    rabbitmq {
+    	connection {
+        	host = 'my.host'
+        	userName = '${USERNAME}'
+        	password = '${PASSWORD}'
+        }
+    }
+}
+```
+
+### Using constructors
+
+TBD
+
+## Build, test, contribute
 
 ### Building tracey-broker
 
- - Make sure you've installed the [tracey core module](https://github.com/Praqma/tracey-core) locally first using `publishToMaven` task
- - `gradle build` 
+Simply run `gradlew build`
 
-### Publishing a local artifact
+### Get the latest builds
 
-If you want to publish a local artifact to maven, you can do so using the `publishToMaven` task: 
-
-`gradle publishToMavenLocal`
+Tracey broker built using [JitPack](https://jitpack.io). See [instructions](https://jitpack.io/#Praqma/tracey-broker) how to add it as dependency
 
 ### TODO
 
-- Proper artifact management. We want to publish this somewhere. Currently we're building dependencies locally.
 - Threading, `.basicConsume(...)` blocks.
 
 
