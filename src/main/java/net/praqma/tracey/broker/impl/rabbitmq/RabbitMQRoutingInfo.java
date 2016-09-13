@@ -1,7 +1,7 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import groovy.util.ConfigObject;
-import net.praqma.tracey.broker.RoutingInfo;
+import net.praqma.tracey.broker.api.RoutingInfo;
 import net.praqma.tracey.core.TraceyDefaultParserImpl;
 
 import java.io.File;

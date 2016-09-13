@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker;
+package net.praqma.tracey.broker.api;
 
 /**
  * <h2>The tracey sender interface</h2>

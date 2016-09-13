@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker;
+package net.praqma.tracey.broker.api;
 
 /**
  * Empty interface for routing data from any brokers

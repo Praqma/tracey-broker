@@ -1,6 +1,6 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
-import net.praqma.tracey.broker.TraceyIOError;
+import net.praqma.tracey.broker.api.TraceyIOError;
 
 /**
  * <h2>Tracey RabbitMQ network error</h2>

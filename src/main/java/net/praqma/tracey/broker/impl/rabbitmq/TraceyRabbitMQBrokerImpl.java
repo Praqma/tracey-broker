@@ -1,6 +1,7 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
-import net.praqma.tracey.broker.TraceyBroker;
+import net.praqma.tracey.broker.api.TraceyBroker;
+import net.praqma.tracey.broker.api.TraceyFilter;
 
 import java.io.File;
 import java.util.ArrayList;

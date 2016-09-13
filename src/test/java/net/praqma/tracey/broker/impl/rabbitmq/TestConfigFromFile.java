@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import java.io.File;
 import java.net.URI;

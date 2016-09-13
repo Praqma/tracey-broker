@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AlreadyClosedException;
@@ -15,8 +15,10 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.praqma.tracey.broker.TraceyIOError;
-import net.praqma.tracey.broker.TraceyReceiver;
+
+import net.praqma.tracey.broker.api.TraceyFilter;
+import net.praqma.tracey.broker.api.TraceyIOError;
+import net.praqma.tracey.broker.api.TraceyReceiver;
 
 /**
  * <h2>Default RabbitMQ receiver implementation</h2>

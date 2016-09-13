@@ -1,4 +1,4 @@
-package net.praqma.tracey.broker.rabbitmq;
+package net.praqma.tracey.broker.impl.rabbitmq;
 
 import com.rabbitmq.client.*;
 import groovy.util.ConfigObject;
