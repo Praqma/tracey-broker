@@ -55,9 +55,8 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
     @Override
     public String receive(final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
-            connection.createChannel();
-            connection.declareExchange(info.getExchangeName(), info.getExchangeType(), true, false);
-            Channel channel = connection.getChannel();
+            Channel channel = connection.createChannel();
+            channel.exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
             Set<String> routingKeys = new HashSet<>();
 
             for(TraceyFilter tf : filters) {

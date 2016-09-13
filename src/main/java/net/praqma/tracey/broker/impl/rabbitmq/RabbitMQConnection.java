@@ -75,28 +75,6 @@ public class RabbitMQConnection {
     }
 
     /**
-     * Declare exchange to communicate with. Will check that exchange doesn't exist on the server and will attempt to
-     * declare it. Otherwise will do nothing.
-     *
-     * @throws IOException when connection error occurs
-     */
-    public void declareExchange(final String exchangeName, final String exchangeType, final boolean durable, final boolean autoDelete) throws IOException, TimeoutException {
-        try {
-            LOG.fine("Check that exchange " + exchangeName + " exists");
-            channel.exchangeDeclarePassive(exchangeName);
-        } catch (IOException e) {
-            // the server will raise a 404 channel exception if the named exchange does not exist so we create it
-            // Moreover if exchange doesn't exists channel will be closed so we need to re-open it
-            LOG.fine("Exchange " + exchangeName + " does not exist." +
-                    "Create exchange: " + exchangeName +
-                    " type: " + exchangeType +
-                    " durable: " + durable +
-                    " autoDelete: " + autoDelete);
-            createChannel().exchangeDeclare(exchangeName, exchangeType, durable, autoDelete, null);
-        }
-    }
-
-    /**
      * Read configuration file and create RabbitMQConnection object.
      * If some fileds are not present in provided configuration file then default value from RabbitMQDefaults will be used.
      * userName and passoword fields support environment variable expansion, i.e. you can use env variable name instead of
