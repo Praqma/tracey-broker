@@ -21,13 +21,11 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQSenderImpl.class.getName());
     private RabbitMQConnection connection;
 
+    /**
+     * A default constructor.
+     */
     public TraceyRabbitMQSenderImpl() {
-        this.connection = new RabbitMQConnection(RabbitMQDefaults.HOST,
-                RabbitMQDefaults.PORT,
-                RabbitMQDefaults.USERNAME,
-                RabbitMQDefaults.PASSWORD,
-                RabbitMQDefaults.AUTOMATIC_RECOVERY
-                );
+        this.connection = new RabbitMQConnection();
     }
 
     /**
@@ -58,7 +56,5 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
         return payload;
     }
 
-    public RabbitMQConnection getConnection() {
-        return connection;
-    }
+    public RabbitMQConnection getConnection() { return this.connection; }
 }

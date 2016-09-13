@@ -19,6 +19,17 @@ public class RabbitMQConnection {
     private Channel channel;
 
     /**
+     * A default constructor.
+     */
+    public RabbitMQConnection() {
+        this.factory.setHost(RabbitMQDefaults.HOST);
+        this.factory.setPort(RabbitMQDefaults.PORT);
+        this.factory.setUsername(RabbitMQDefaults.USERNAME);
+        this.factory.setPassword(RabbitMQDefaults.PASSWORD);
+        this.factory.setAutomaticRecoveryEnabled(RabbitMQDefaults.AUTOMATIC_RECOVERY);
+    }
+
+    /**
      * A detailed constructor.
      * @param host the RabbitMQ host
      * @param port port for RabbitMQ server
@@ -84,6 +95,14 @@ public class RabbitMQConnection {
         }
     }
 
+    /**
+     * Read configuration file and create RabbitMQConnection object.
+     * If some fileds are not present in provided configuration file then default value from RabbitMQDefaults will be used.
+     * userName and passoword fields support environment variable expansion, i.e. you can use env variable name instead of
+     * actual value. The following formats supported - $SOMETEXT, ${SOMETEXT}, $SOMETEXT$, %SOMETEXT%
+     * @param f File object that contains configuration file
+     * @return  RabbitMQConnection object
+     */
     public static RabbitMQConnection buildFromConfigFile(File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();

@@ -35,12 +35,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
      * A default constructor.
      */
     public TraceyRabbitMQReceiverImpl() {
-        this.connection = new RabbitMQConnection(RabbitMQDefaults.HOST,
-                RabbitMQDefaults.PORT,
-                RabbitMQDefaults.USERNAME,
-                RabbitMQDefaults.PASSWORD,
-                RabbitMQDefaults.AUTOMATIC_RECOVERY
-        );
+        this.connection = new RabbitMQConnection();
         handler = new TraceyConsolePrintHandler();
         filters = new ArrayList<>();
     }

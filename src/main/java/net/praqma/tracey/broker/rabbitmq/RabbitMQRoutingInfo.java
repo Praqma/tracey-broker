@@ -15,6 +15,9 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
     private String exchangeName;
     private String exchangeType;
 
+    /**
+     * A default constructor.
+     */
     public RabbitMQRoutingInfo() {
         this.headers = new HashMap<>();
         this.exchangeName = RabbitMQDefaults.EXCHANGE_NAME;
@@ -23,6 +26,14 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         this.routingKey = RabbitMQDefaults.ROUTING_KEY;
     }
 
+    /**
+     * A detailed constructor.
+     * @param headers headers for outgoing messages
+     * @param deliveryMode delvery mode for outgoing messages
+     * @param routingKey routing key to use for outgoing messages
+     * @param exchangeName exchange name to connect to
+     * @param exchangeType exchange type to create if given exchange name doesn't exist
+     */
     public RabbitMQRoutingInfo(Map<String, Object> headers, int deliveryMode, String routingKey, String exchangeName, String exchangeType) {
         this.headers = headers;
         this.deliveryMode = deliveryMode;
@@ -31,6 +42,12 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         this.exchangeType = exchangeType;
     }
 
+    /**
+     * Read configuration file and create RabbitMQRoutingInfo object.
+     * If some filed are not present in provided configuration file then default value from RabbitMQDefaults will be used
+     * @param f File object that contains configuration file
+     * @return  RabbitMQRoutingInfo object
+     */
     public static RabbitMQRoutingInfo buildFromConfigFile(File f) {
         final TraceyDefaultParserImpl parser = new TraceyDefaultParserImpl();
         final Map m = ((ConfigObject) parser.parse(f)).flatten();
@@ -42,6 +59,13 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         return new RabbitMQRoutingInfo(headers, deliveryMode , routingKey, exchangeName, exchangeType);
     }
 
+    /**
+     * Extract map with headers from flattened configuration file. Path to headers in configuration will look like
+     * broker.rabbitmq.routingInfo.headers.somekey. We need to strip out broker.rabbitmq.routingInfo.headers. part
+     * and only leave key value pairs
+     * @param config flattened configuration file
+     * @return  map with the headers to send
+     */
     private static Map<String, Object> extractHeaders(Map<String, Object> config) {
         Map<String, Object> headers = new HashMap<>();
         config.forEach((key,value)->{
