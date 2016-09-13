@@ -45,7 +45,7 @@ public class TraceyEiffelTypeFilterTest {
 
     @Test
     public void acceptPayloadThatPassThroughFilter() throws IOException, URISyntaxException {
-        URI url = DispatcherTest.class.getResource("sourcechangeevent.json").toURI();
+        URI url = TraceyEiffelTypeFilterTest.class.getResource("sourcechangeevent.json").toURI();
         Path p = Paths.get(url);
         byte[] data = Files.readAllBytes(p);
         String output = filter.postReceive(new String(data, "UTF-8"));
