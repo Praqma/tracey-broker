@@ -11,7 +11,7 @@ public class RabbitMQDefaults {
     final public static boolean AUTOMATIC_RECOVERY = true;
     final public static String EXCHANGE_TYPE = "direct";
     final public static String EXCHANGE_NAME = "tracey";
-    final public static int    DELEIVERY_MODE = 0;
+    final public static int    DELEIVERY_MODE = 1;
     final public static String ROUTING_KEY = "";
     final public static Map<String, Object> HEADERS= Collections.EMPTY_MAP;
 }
