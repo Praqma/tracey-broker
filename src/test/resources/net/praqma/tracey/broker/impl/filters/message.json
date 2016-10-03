@@ -1,0 +1,19 @@
+{
+  "Students": [
+    {
+      "id": 1,
+      "Name": "Student1",
+      "FName": "FName1",
+      "Class": "I",
+      "City": "Delhi"
+    },
+    {
+      "id": 2,
+      "Name": "Student2",
+      "FName": "FName2",
+      "Class": "II",
+      "City": "Mumbai"
+    }
+    ]
+}
+
