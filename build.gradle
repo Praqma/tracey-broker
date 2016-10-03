@@ -28,6 +28,7 @@ dependencies {
     compile group: 'com.github.Praqma', name: 'tracey-core', version: 'f9bc7a2'
     compile group: 'org.json', name: 'json', version: '20160212'
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
+    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.6.6'
 
     checkstyle group: 'com.puppycrawl.tools', name: 'checkstyle', version: '5.9'
     pmd        group: 'net.sourceforge.pmd', name: 'pmd-java', version: '5.2.3'
