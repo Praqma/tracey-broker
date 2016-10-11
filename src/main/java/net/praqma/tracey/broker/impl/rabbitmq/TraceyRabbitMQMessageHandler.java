@@ -12,7 +12,7 @@ import java.io.IOException;
  * </p>
  */
 public interface TraceyRabbitMQMessageHandler {
-    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, final byte[] body) throws IOException;
-    public void handleCancel(String consumerTag) throws IOException;
-    public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig);
+    void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, final byte[] body) throws IOException;
+    void handleCancel(String consumerTag) throws IOException;
+    void handleShutdownSignal(String consumerTag, ShutdownSignalException sig);
 }

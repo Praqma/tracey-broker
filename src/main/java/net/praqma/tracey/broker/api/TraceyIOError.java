@@ -11,7 +11,7 @@ package net.praqma.tracey.broker.api;
  * </p>
  */
 public class TraceyIOError extends Exception {
-    public TraceyIOError(String message, Throwable innerCause) {
+    public TraceyIOError(final String message, final Throwable innerCause) {
         super(message, innerCause);
     }
 }

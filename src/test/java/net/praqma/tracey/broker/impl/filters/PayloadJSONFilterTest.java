@@ -6,8 +6,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Assert;
 
 /**
  *
@@ -23,44 +22,44 @@ public class PayloadJSONFilterTest {
     public PayloadJSONFilterTest() throws IOException {
     }
 
-    private String getFileContent(String fileName) throws IOException {
-        String path = PayloadJSONFilterTest.class.getResource(fileName).getPath();
-        File f = new File(path);
+    private String getFileContent(final String fileName) throws IOException {
+        final String path = PayloadJSONFilterTest.class.getResource(fileName).getPath();
+        final File f = new File(path);
         return FileUtils.readFileToString(f, "UTF-8");
     }
     @Test
     public void acceptKeyValue() throws Exception {
-        String payload = match.postReceive(getFileContent("message.json"));
-        assertNotNull(payload);
+        final String payload = match.postReceive(getFileContent("message.json"));
+        Assert.assertNotNull(payload);
     }
 
     @Test
     public void rejectKeyValue() throws Exception {
-        String payload = notMatch.postReceive(getFileContent("message.json"));
-        assertNull(payload);
+        final String payload = notMatch.postReceive(getFileContent("message.json"));
+        Assert.assertNull(payload);
     }
     @Test
     public void acceptPatternJsonReg() throws Exception {
-        String payload = filterMatch.postReceive(getFileContent("message.json"));
-        assertNotNull(payload);
+        final String payload = filterMatch.postReceive(getFileContent("message.json"));
+        Assert.assertNotNull(payload);
     }
 
     @Test
     public void rejectPatternJsonReg() throws Exception {
-        String payload = filterNotMatch.postReceive(getFileContent("message.json"));
-        assertNull(payload);
+        final String payload = filterNotMatch.postReceive(getFileContent("message.json"));
+        Assert.assertNull(payload);
     }
 
     @Test
     public void wrongJson() throws Exception {
-        String payload = filterMatch.postReceive(getFileContent("wrong.json"));
-        assertNull(payload);
+        final String payload = filterMatch.postReceive(getFileContent("wrong.json"));
+        Assert.assertNull(payload);
     }
 
     @Test
     public void test() throws Exception {
-        PayloadJSONFilter filter = new PayloadJSONFilter("..[?(@.id == 2)]");
-        String payload = filter.postReceive(getFileContent("message.json"));
-        assertNull(payload);
+        final PayloadJSONFilter filter = new PayloadJSONFilter("..[?(@.id == 2)]");
+        final String payload = filter.postReceive(getFileContent("message.json"));
+        Assert.assertNull(payload);
     }
 }

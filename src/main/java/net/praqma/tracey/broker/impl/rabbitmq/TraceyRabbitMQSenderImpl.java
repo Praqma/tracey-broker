@@ -40,7 +40,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
     @Override
     public String send(final String payload, final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
-            Channel channel = connection.createChannel();
+            final Channel channel = connection.createChannel();
             LOG.fine(String.format("Declare exchange: %s, type: %s, durable: true", info.getExchangeName(), info.getExchangeType()));
             channel.exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
             final AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();

@@ -14,19 +14,18 @@ import java.util.logging.Logger;
  */
 public class PayloadJSONFilter implements TraceyFilter {
 
+    private static final Logger LOG = Logger.getLogger(PayloadJSONFilter.class.getName());
+
     private String pattern = "";
     private String key = "";
     private String value = "";
 
-    private static final Logger LOG = Logger.getLogger(PayloadJSONFilter.class.getName());
-
-
-    public PayloadJSONFilter(String pattern) {
+    public PayloadJSONFilter(final String pattern) {
         this.pattern = pattern;
 
     }
 
-    public PayloadJSONFilter(String key, String value){
+    public PayloadJSONFilter(final String key, final String value){
         this.key = key;
         this.value = value;
         this.pattern = String.format("$..*[?(@.%s == \"%s\")]", key, value);
@@ -38,9 +37,9 @@ public class PayloadJSONFilter implements TraceyFilter {
     }
 
     @Override
-    public String postReceive(String payload) throws JsonPathException {
+    public String postReceive(final String payload) throws JsonPathException {
         try {
-            List<String> read = JsonPath.read(payload, pattern);
+            final List<String> read = JsonPath.read(payload, pattern);
             if (!read.isEmpty()) {
                 return payload;
             }

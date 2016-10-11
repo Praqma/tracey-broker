@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.tracey.broker.impl.filters;
 
 import net.praqma.tracey.broker.api.TraceyFilter;
@@ -12,16 +7,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author Mads
- */
 public class PayloadRegexFilter implements TraceyFilter {
 
     private String regex = ".*";
     private Pattern regexCompiled;
 
-    public PayloadRegexFilter(String regex) {
+    public PayloadRegexFilter(final String regex) {
         this.regex = regex;
         regexCompiled = Pattern.compile(this.regex, Pattern.MULTILINE);
     }
@@ -32,8 +23,8 @@ public class PayloadRegexFilter implements TraceyFilter {
     }
 
     @Override
-    public String postReceive(String payload) {
-        Matcher m = getRegexCompiled().matcher(payload);
+    public String postReceive(final String payload) {
+        final Matcher m = getRegexCompiled().matcher(payload);
         if(m.matches()) {
             return payload;
         }
@@ -50,7 +41,7 @@ public class PayloadRegexFilter implements TraceyFilter {
     /**
      * @param regex the regex to set
      */
-    public void setRegex(String regex) {
+    public void setRegex(final String regex) {
         this.regex = regex;
     }
 
@@ -64,7 +55,7 @@ public class PayloadRegexFilter implements TraceyFilter {
     /**
      * @param regexCompiled the regexCompiled to set
      */
-    public void setRegexCompiled(Pattern regexCompiled) {
+    public void setRegexCompiled(final Pattern regexCompiled) {
         this.regexCompiled = regexCompiled;
     }
 

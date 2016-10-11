@@ -12,7 +12,7 @@ import net.praqma.tracey.broker.api.TraceyIOError;
  */
 public class TraceyRabbitMQError extends TraceyIOError {
 
-    public TraceyRabbitMQError(String message, Throwable innerCause) {
+    public TraceyRabbitMQError(final String message, final Throwable innerCause) {
         super(message, innerCause);
     }
 
