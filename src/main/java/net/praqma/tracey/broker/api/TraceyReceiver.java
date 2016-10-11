@@ -7,5 +7,5 @@ package net.praqma.tracey.broker.api;
  * </p>
  */
 public interface TraceyReceiver <T extends RoutingInfo> {
-    public String receive(T data) throws TraceyIOError;
+    String receive(T data) throws TraceyIOError;
 }

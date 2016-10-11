@@ -67,7 +67,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
      * @return  map with the headers to send
      */
     private static Map<String, Object> extractHeaders(final Map<String, Object> config) {
-        Map<String, Object> headers = new HashMap<>();
+        final Map<String, Object> headers = new HashMap<>();
         config.forEach((key,value)->{
             if(key.contains("broker.rabbitmq.routingInfo.headers")){
                 headers.put(key.replace("broker.rabbitmq.routingInfo.headers.", ""), value);
@@ -76,7 +76,7 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         return headers;
     }
 
-    public void setHeaders(Map<String, Object> headers) {
+    public void setHeaders(final Map<String, Object> headers) {
         this.headers = headers;
     }
 
@@ -100,11 +100,11 @@ public class RabbitMQRoutingInfo implements RoutingInfo {
         return this.exchangeType;
     }
 
-    public void setDeliveryMode(int deliveryMode) { this.deliveryMode = deliveryMode; }
+    public void setDeliveryMode(final int deliveryMode) { this.deliveryMode = deliveryMode; }
 
-    public void setRoutingKey(String routingKey) { this.routingKey = routingKey; }
+    public void setRoutingKey(final String routingKey) { this.routingKey = routingKey; }
 
-    public void setExchangeName(String exchangeName) { this.exchangeName = exchangeName; }
+    public void setExchangeName(final String exchangeName) { this.exchangeName = exchangeName; }
 
-    public void setExchangeType(String exchangeType) { this.exchangeType = exchangeType; }
+    public void setExchangeType(final String exchangeType) { this.exchangeType = exchangeType; }
 }

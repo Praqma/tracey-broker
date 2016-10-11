@@ -1,12 +1,22 @@
 package net.praqma.tracey.broker.impl.rabbitmq;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
+import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.AMQP;
 import net.praqma.tracey.broker.api.TraceyFilter;
 import net.praqma.tracey.broker.api.TraceyIOError;
 import net.praqma.tracey.broker.api.TraceyReceiver;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +59,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
             return Collections.emptyList();
         }
 
-        final ArrayList<TraceyFilter> list = new ArrayList<>(filters.size());
+        final List<TraceyFilter> list = new ArrayList<>(filters.size());
         for (TraceyFilter traceyFilter : list) {
             if (traceyFilter != null) {
                 list.add(traceyFilter);
@@ -61,16 +71,16 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
     @Override
     public String receive(final RabbitMQRoutingInfo info) throws TraceyIOError {
         try {
-            Channel channel = connection.createChannel();
+            final Channel channel = connection.createChannel();
             LOG.fine(String.format("Declare exchange: %s, type: %s, durable: true", info.getExchangeName(), info.getExchangeType()));
             channel.exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
-            Set<String> routingKeys = new HashSet<>();
+            final Set<String> routingKeys = new HashSet<>();
 
             for(TraceyFilter tf : filters) {
                 routingKeys.addAll(tf.preReceive());
             }
 
-            String queueName = channel.queueDeclare().getQueue();
+            final String queueName = channel.queueDeclare().getQueue();
 
             if(routingKeys.isEmpty()) {
                 channel.queueBind(queueName, info.getExchangeName(), "#");
@@ -95,26 +105,26 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
 
             LOG.info(" [tracey] Waiting for messages. To exit press CTRL+C");
 
-            Consumer c = new DefaultConsumer(channel) {
+            final Consumer c = new DefaultConsumer(channel) {
                 @Override
-                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                public void handleDelivery(final String consumerTag, final Envelope envelope, final AMQP.BasicProperties properties, final byte[] body) throws IOException {
                     handler.handleDelivery(consumerTag, envelope, properties, body);
                 }
 
                 @Override
-                public void handleCancel(String consumerTag) throws IOException {
+                public void handleCancel(final String consumerTag) throws IOException {
                     super.handleCancel(consumerTag);
                     handler.handleCancel(consumerTag);
                 }
 
                 @Override
-                public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
+                public void handleShutdownSignal(final String consumerTag, final ShutdownSignalException sig) {
                     super.handleShutdownSignal(consumerTag, sig); //To change body of generated methods, choose Tools | Templates.
                     handler.handleShutdownSignal(consumerTag, sig);
                 }
 
                 @Override
-                public void handleRecoverOk(String consumerTag) {
+                public void handleRecoverOk(final String consumerTag) {
                     LOG.info(String.format("Succesfully recovered connection for %s", consumerTag));
                 }
 

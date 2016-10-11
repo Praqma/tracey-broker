@@ -3,15 +3,17 @@ package net.praqma.tracey.broker.impl.rabbitmq;
 import java.util.Collections;
 import java.util.Map;
 
-public class RabbitMQDefaults {
-    final public static String HOST = "localhost";
-    final public static int PORT = 5672;
-    final public static String USERNAME = "guest";
-    final public static String PASSWORD = "guest";
-    final public static boolean AUTOMATIC_RECOVERY = true;
-    final public static String EXCHANGE_TYPE = "direct";
-    final public static String EXCHANGE_NAME = "tracey";
-    final public static int    DELEIVERY_MODE = 1;
-    final public static String ROUTING_KEY = "";
-    final public static Map<String, Object> HEADERS= Collections.EMPTY_MAP;
+final class RabbitMQDefaults {
+    public static final String HOST = "localhost";
+    public static final int PORT = 5672;
+    public static final String USERNAME = "guest";
+    public static final String PASSWORD = "guest";
+    public static final boolean AUTOMATIC_RECOVERY = true;
+    public static final String EXCHANGE_TYPE = "direct";
+    public static final String EXCHANGE_NAME = "tracey";
+    public static final int    DELEIVERY_MODE = 1;
+    public static final String ROUTING_KEY = "";
+    public static final Map<String, Object> HEADERS= Collections.EMPTY_MAP;
+
+    private RabbitMQDefaults() {};
 }

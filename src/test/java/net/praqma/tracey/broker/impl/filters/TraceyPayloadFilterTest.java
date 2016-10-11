@@ -1,7 +1,6 @@
 package net.praqma.tracey.broker.impl.filters;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Assert;
 
 import org.junit.Test;
 
@@ -11,17 +10,17 @@ import org.junit.Test;
  */
 public class TraceyPayloadFilterTest {
 
-    static PayloadRegexFilter filter = new PayloadRegexFilter(".*keyword.*");
+    private static final PayloadRegexFilter filter = new PayloadRegexFilter(".*keyword.*");
 
     @Test
     public void reject() {
-        String response = filter.postReceive("reject");
-        assertNull(response);
+        final String response = filter.postReceive("reject");
+        Assert.assertNull(response);
     }
 
     @Test
     public void accept() {
-        String response = filter.postReceive("there was a keyword found here.");
-        assertNotNull(response);
+        final String response = filter.postReceive("there was a keyword found here.");
+        Assert.assertNotNull(response);
     }
 }

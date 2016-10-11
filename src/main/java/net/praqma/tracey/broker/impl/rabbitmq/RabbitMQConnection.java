@@ -1,6 +1,7 @@
 package net.praqma.tracey.broker.impl.rabbitmq;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Channel;
 import groovy.util.ConfigObject;
 import net.praqma.tracey.core.TraceyDefaultParserImpl;
 
@@ -98,10 +99,10 @@ public class RabbitMQConnection {
         if(original == null)
             return null;
         String text = original;
-        Map<String, String> envMap = System.getenv();
+        final Map<String, String> envMap = System.getenv();
         for (Map.Entry<String, String> entry : envMap.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
+            final String key = entry.getKey();
+            final String value = entry.getValue();
             text = text.replace("${" + key + "}", value);
             text = text.replace("$"+key+"$", value);
             text = text.replace("$"+key, value);

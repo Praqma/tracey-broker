@@ -17,13 +17,25 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
     protected T receiver;
     protected S sender;
 
+    public TraceyBroker() { }
+
+    /**
+     *
+     * @param receiver  initialize the {@link TraceyBroker} with this {@link TraceyReceiver}
+     * @param sender initialize the {@link TraceyBroker} with this {@link TraceySender}
+     */
+    public TraceyBroker(final T receiver, final S sender) {
+        this.sender = sender;
+        this.receiver = receiver;
+    }
+
     /**
      *
      * @param payload  the payload you want to send using the {@link TraceySender}
      * @return the sent payload
      * @throws TraceyIOError if the chosen middleware for message sending encounters a network error
      */
-    public String send(String payload, RoutingInfo data) throws TraceyIOError {
+    public String send(final String payload, final RoutingInfo data) throws TraceyIOError {
         return sender.send(payload, data);
     }
 
@@ -33,20 +45,8 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
      * @return the received message
      * @throws TraceyIOError if the chosen middleware for receiving messages encounters a network error.
      */
-    public String receive(RoutingInfo data) throws TraceyIOError {
+    public String receive(final RoutingInfo data) throws TraceyIOError {
         return receiver.receive(data);
-    }
-
-    public TraceyBroker() { }
-
-    /**
-     *
-     * @param receiver  initialize the {@link TraceyBroker} with this {@link TraceyReceiver}
-     * @param sender initialize the {@link TraceyBroker} with this {@link TraceySender}
-     */
-    public TraceyBroker(T receiver, S sender) {
-        this.sender = sender;
-        this.receiver = receiver;
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
     /**
      * @param receiver the receiver to set
      */
-    public void setReceiver(T receiver) {
+    public void setReceiver(final T receiver) {
         this.receiver = receiver;
     }
 
@@ -73,7 +73,7 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
     /**
      * @param sender the sender to set
      */
-    public void setSender(S sender) {
+    public void setSender(final S sender) {
         this.sender = sender;
     }
 }
