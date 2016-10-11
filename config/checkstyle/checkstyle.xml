@@ -15,7 +15,6 @@
     <property name="severity" value="ignore"/>
   </module>
   <module name="FinalClass"/>
-  <module name="HideUtilityClassConstructor"/>
   <module name="InnerTypeLast"/>
   <module name="InterfaceIsType"/>
   <module name="MutableException"/>
