@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 public class PayloadJSONFilter implements TraceyFilter {
 
     private String pattern = "";
+    private String key = "";
+    private String value = "";
+
     private static final Logger LOG = Logger.getLogger(PayloadJSONFilter.class.getName());
 
 
@@ -24,6 +27,8 @@ public class PayloadJSONFilter implements TraceyFilter {
     }
 
     public PayloadJSONFilter(String key, String value){
+        this.key = key;
+        this.value = value;
         this.pattern = String.format("$..*[?(@.%s == \"%s\")]", key, value);
     }
 
@@ -45,4 +50,29 @@ public class PayloadJSONFilter implements TraceyFilter {
         }
         return null;
     }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(final String pattern) {
+        this.pattern = pattern;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(final String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(final String value) {
+        this.value = value;
+    }
+
 }

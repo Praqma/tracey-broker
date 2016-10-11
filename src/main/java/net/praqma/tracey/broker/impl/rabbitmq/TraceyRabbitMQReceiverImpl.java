@@ -1,24 +1,15 @@
 package net.praqma.tracey.broker.impl.rabbitmq;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AlreadyClosedException;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.ShutdownSignalException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.rabbitmq.client.*;
 import net.praqma.tracey.broker.api.TraceyFilter;
 import net.praqma.tracey.broker.api.TraceyIOError;
 import net.praqma.tracey.broker.api.TraceyReceiver;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <h2>Default RabbitMQ receiver implementation</h2>
@@ -26,20 +17,21 @@ import net.praqma.tracey.broker.api.TraceyReceiver;
  * Basic implementation for RabbitMQ. Prints received messages to console.
  * </p>
  */
-public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRoutingInfo> {
+public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutingInfo> {
 
     private static final Logger LOG = Logger.getLogger(TraceyRabbitMQReceiverImpl.class.getName());
-    private RabbitMQConnection connection;
+    private final RabbitMQConnection connection;
+    private final List<TraceyFilter> filters;
+    // handlers will be set by calling tracey message handler and can not be final
     private TraceyRabbitMQMessageHandler handler;
-    private List<TraceyFilter> filters;
 
     /**
      * A default constructor.
      */
     public TraceyRabbitMQReceiverImpl() {
-        this.connection = new RabbitMQConnection();
+        connection = new RabbitMQConnection();
         handler = new TraceyConsolePrintHandler();
-        filters = new ArrayList<>();
+        filters = Collections.emptyList();
     }
 
     /**
@@ -49,7 +41,21 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
     public TraceyRabbitMQReceiverImpl(final RabbitMQConnection connection, final List<TraceyFilter> filters) {
         this.connection = connection;
         this.handler = new TraceyConsolePrintHandler();
-        this.filters = filters;
+        this.filters = filterNulls(filters);
+    }
+
+    private static List<TraceyFilter> filterNulls(final List<TraceyFilter> filters) {
+        if (filters == null) {
+            return Collections.emptyList();
+        }
+
+        final ArrayList<TraceyFilter> list = new ArrayList<>(filters.size());
+        for (TraceyFilter traceyFilter : list) {
+            if (traceyFilter != null) {
+                list.add(traceyFilter);
+            }
+        }
+        return Collections.unmodifiableList(list);
     }
 
     @Override
@@ -142,10 +148,6 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver <RabbitMQRouti
 
     public List<TraceyFilter> getFilters() {
         return filters;
-    }
-
-    public void setFilters(final List<TraceyFilter> filters) {
-        this.filters = filters;
     }
 
     public RabbitMQConnection getConnection() {
