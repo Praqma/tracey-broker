@@ -3,7 +3,7 @@ package net.praqma.tracey.broker.impl.rabbitmq;
 import java.util.Collections;
 import java.util.Map;
 
-final class RabbitMQDefaults {
+public class RabbitMQDefaults {
     public static final String HOST = "localhost";
     public static final int PORT = 5672;
     public static final String USERNAME = "guest";
@@ -14,6 +14,4 @@ final class RabbitMQDefaults {
     public static final int    DELEIVERY_MODE = 1;
     public static final String ROUTING_KEY = "";
     public static final Map<String, Object> HEADERS= Collections.EMPTY_MAP;
-
-    private RabbitMQDefaults() {};
 }
