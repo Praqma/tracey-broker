@@ -41,17 +41,6 @@ dependencies {
     testCompile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId 'net.praqma.tracey'
-            artifactId 'broker'
-            version '1.0'
-            from components.java
-        }
-    }
-}
-
 // Static code analysis
 tasks.withType(FindBugs) {
     ignoreFailures false
