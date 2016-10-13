@@ -9,7 +9,7 @@ public class RabbitMQDefaults {
     public static final String USERNAME = "guest";
     public static final String PASSWORD = "guest";
     public static final boolean AUTOMATIC_RECOVERY = true;
-    public static final String EXCHANGE_TYPE = "direct";
+    public static final String EXCHANGE_TYPE = "topic";
     public static final String EXCHANGE_NAME = "tracey";
     public static final int    DELEIVERY_MODE = 1;
     public static final String ROUTING_KEY = "";
