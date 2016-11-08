@@ -60,7 +60,7 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
         }
 
         final List<TraceyFilter> list = new ArrayList<>(filters.size());
-        for (TraceyFilter traceyFilter : list) {
+        for (TraceyFilter traceyFilter : filters) {
             if (traceyFilter != null) {
                 list.add(traceyFilter);
             }
