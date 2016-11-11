@@ -1,5 +1,7 @@
 package net.praqma.tracey.broker.api;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * <h2>The tracey receiver interface</h2>
  * <p>
@@ -7,5 +9,5 @@ package net.praqma.tracey.broker.api;
  * </p>
  */
 public interface TraceyReceiver <T extends RoutingInfo> {
-    String receive(T data) throws TraceyIOError;
+    String receive(T data, String key) throws TraceyIOError, TimeoutException;
 }
