@@ -1,3 +1,5 @@
+
+ [![Build Status](https://api.travis-ci.org/Praqma/tracey-broker.svg?branch=master)](https://travis-ci.org/Praqma/tracey-broker)
 ---
 maintainer: andrey9kin
 ---
