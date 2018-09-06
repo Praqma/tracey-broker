@@ -4,8 +4,10 @@ import net.praqma.tracey.broker.api.TraceyBroker;
 import net.praqma.tracey.broker.api.TraceyFilter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * <h2>Tracey broker for RabbitMQ</h2>
@@ -50,7 +52,7 @@ public class TraceyRabbitMQBrokerImpl extends TraceyBroker<TraceyRabbitMQReceive
      * Create all objects using parameters from config file. Filters won't be set for receiver. Set them afterwards
      * @param configFile File object with config file
      */
-    public TraceyRabbitMQBrokerImpl(final File configFile) {
+    public TraceyRabbitMQBrokerImpl(final File configFile)  throws IOException, TimeoutException {
         final RabbitMQConnection connection = RabbitMQConnection.buildFromConfigFile(configFile);
         this.receiver = new TraceyRabbitMQReceiverImpl(connection, new ArrayList<>());
         this.sender = new TraceyRabbitMQSenderImpl(connection);

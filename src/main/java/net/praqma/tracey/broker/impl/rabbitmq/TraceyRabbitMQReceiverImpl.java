@@ -1,22 +1,12 @@
 package net.praqma.tracey.broker.impl.rabbitmq;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.ShutdownSignalException;
-import com.rabbitmq.client.AlreadyClosedException;
-import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.*;
 import net.praqma.tracey.broker.api.TraceyFilter;
 import net.praqma.tracey.broker.api.TraceyIOError;
 import net.praqma.tracey.broker.api.TraceyReceiver;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,8 +28,8 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
     /**
      * A default constructor.
      */
-    public TraceyRabbitMQReceiverImpl() {
-        connection = new RabbitMQConnection();
+    public TraceyRabbitMQReceiverImpl(final RabbitMQConnection connection) {
+        this.connection = connection;
         handler = new TraceyConsolePrintHandler();
         filters = Collections.emptyList();
     }
@@ -69,9 +59,9 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
     }
 
     @Override
-    public String receive(final RabbitMQRoutingInfo info) throws TraceyIOError {
+    public String receive(final RabbitMQRoutingInfo info, final String jobName) throws TraceyIOError, TimeoutException {
         try {
-            final Channel channel = connection.createChannel();
+            final Channel channel = connection.getChannelPool().createChannel(jobName);
             LOG.fine(String.format("Declare exchange: %s, type: %s, durable: true", info.getExchangeName(), info.getExchangeType()));
             channel.exchangeDeclare(info.getExchangeName(), info.getExchangeType(), true);
             final Set<String> routingKeys = new HashSet<>();
@@ -90,7 +80,6 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
                 }
             }
 
-            LOG.info(" [tracey] Host        : " + connection.getHost());
             LOG.info(" [tracey] Using queue    : " + queueName);
             LOG.info(" [tracey] Exchange       : " + info.getExchangeName());
             LOG.info(" [tracey] Routing key(s) :");
@@ -132,20 +121,14 @@ public class TraceyRabbitMQReceiverImpl implements TraceyReceiver<RabbitMQRoutin
 
             return channel.basicConsume(queueName, false, c);
 
-        } catch (IOException | TimeoutException ex) {
+        } catch (IOException ex) {
             LOG.log(Level.SEVERE, "Error while recieving", ex);
             throw new TraceyRabbitMQError("Exception caught while recieving using RabbitMQ", ex);
         }
     }
 
-    public void cancel(final String consumerTag) throws IOException {
-        if(consumerTag != null && connection.getChannel() != null) {
-            try {
-                connection.getChannel().basicCancel(consumerTag);
-            } catch (AlreadyClosedException ignore) {
-                LOG.info("Ignoring, connection was forcibly closed elsewhere");
-            }
-        }
+    public void cancel(final String jobName, final String consumerTag) throws IOException, TimeoutException {
+        connection.getChannelPool().closeChannel(jobName, consumerTag);
     }
 
     public TraceyRabbitMQMessageHandler getHandler() {

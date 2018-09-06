@@ -1,5 +1,7 @@
 package net.praqma.tracey.broker.api;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * <h2>Tracey Broker</h2>
  * <p>
@@ -45,8 +47,8 @@ public abstract class TraceyBroker<T extends TraceyReceiver, S extends TraceySen
      * @return the received message
      * @throws TraceyIOError if the chosen middleware for receiving messages encounters a network error.
      */
-    public String receive(final RoutingInfo data) throws TraceyIOError {
-        return receiver.receive(data);
+    public String receive(final RoutingInfo data, final String key) throws TraceyIOError, TimeoutException {
+        return receiver.receive(data, key);
     }
 
     /**

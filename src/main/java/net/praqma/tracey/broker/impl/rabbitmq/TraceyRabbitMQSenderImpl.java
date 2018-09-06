@@ -1,15 +1,15 @@
 package net.praqma.tracey.broker.impl.rabbitmq;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import net.praqma.tracey.broker.api.TraceyIOError;
+import net.praqma.tracey.broker.api.TraceySender;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import net.praqma.tracey.broker.api.TraceyIOError;
-import net.praqma.tracey.broker.api.TraceySender;
 
 /**
  * <h2>Tracey RabbitMQ sender</h2>
@@ -26,7 +26,7 @@ public class TraceyRabbitMQSenderImpl implements TraceySender <RabbitMQRoutingIn
      * A default constructor.
      */
     public TraceyRabbitMQSenderImpl() {
-        this.connection = new RabbitMQConnection();
+        this.connection = RabbitMQConnection.getConnection();
     }
 
     /**
